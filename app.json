@@ -1,0 +1,6 @@
+{
+  "name": "Mae Backend",
+  "description": "Provides resources to store and analyze user journal entries.",
+  "image": "heroku/gradle",
+  "addons": [ "heroku-postgresql" ]
+}
