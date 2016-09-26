@@ -1,0 +1,12 @@
+# Gradle
+.gradle/
+build/
+logs/
+out/
+
+# IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+.shelf
