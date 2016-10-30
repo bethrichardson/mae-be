@@ -1,6 +1,7 @@
 package edu.maebe;
 
 import com.beust.jcommander.JCommander;
+import com.heroku.sdk.jdbc.DatabaseUrl;
 import edu.maebe.handlers.JournalCreateHandler;
 import edu.maebe.handlers.JournalIndexHandler;
 import edu.maebe.sql2omodel.Sql2oModel;
@@ -8,11 +9,18 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import edu.maebe.model.Model;
 
+import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.sql2o.converters.UUIDConverter;
 import org.sql2o.quirks.PostgresQuirks;
+import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -38,13 +46,29 @@ public class MaebeService
 
         port(options.servicePort);
 
-        Sql2o sql2o = new Sql2o("jdbc:postgresql://" + options.dbHost + ":" + options.dbPort + "/" + options.database,
-                                options.dbUsername, options.dbPassword, new PostgresQuirks() {
+        Sql2o sql2o = new Sql2o(System.getenv("JDBC_DATABASE_URL"),
+                                System.getenv("JDBC_DATABASE_USERNAME"), System.getenv("JDBC_DATABASE_PASSWORD"), new PostgresQuirks() {
             {
                 // make sure we use default UUID converter.
                 converters.put(UUID.class, new UUIDConverter());
             }
         });
+
+
+        try (Connection conn = sql2o.beginTransaction()) {
+            conn.createQuery("CREATE TABLE IF NOT EXISTS journals (\n" +
+                                     "    id uuid primary key,\n" +
+                                     "    type text not null,\n" +
+                                     "    value text,\n" +
+                                     "    date date\n" +
+                                     ");")
+                    .executeUpdate();
+            conn.commit();
+        }
+
+        catch (Exception e) {
+            logger.warning("There was an error creating table: " + e);
+        }
 
         Model model = new Sql2oModel(sql2o);
         FreeMarkerEngine freeMarkerEngine = new FreeMarkerEngine();
