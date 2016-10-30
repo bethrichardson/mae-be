@@ -1,5 +1,3 @@
-package edu.maebe;
-
 import com.beust.jcommander.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +7,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 
-class CommandLineOptions {
+public class CommandLineOptions {
 
     @Parameter(names = "--debug")
     boolean debug = false;

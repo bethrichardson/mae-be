@@ -1,5 +1,3 @@
-package edu.maebe;
-
 import com.beust.jcommander.JCommander;
 import edu.maebe.handlers.JournalCreateHandler;
 import edu.maebe.handlers.JournalIndexHandler;
@@ -22,10 +20,10 @@ import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.SparkBase.port;
 
-public class MaebeService
+public class Main
 {
 
-    private static final Logger logger = Logger.getLogger(MaebeService.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(Main.class.getCanonicalName());
 
     public static void main( String[] args) {
         CommandLineOptions options = new CommandLineOptions();
@@ -66,7 +64,7 @@ public class MaebeService
         Model model = new Sql2oModel(sql2o);
         FreeMarkerEngine freeMarkerEngine = new FreeMarkerEngine();
         Configuration freeMarkerConfiguration = new Configuration();
-        freeMarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(MaebeService.class, "/"));
+        freeMarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(Main.class, "/"));
         freeMarkerEngine.setConfiguration(freeMarkerConfiguration);
 
         // insert a post (using HTTP post method)
