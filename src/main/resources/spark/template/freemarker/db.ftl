@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <% render "header.html" %>
+  <#include "header.ftl">
 </head>
 
 <body>
-  <% render "nav.html" %>
+
+  <#include "nav.ftl">
 
 <div class="container">
 
   <h1>Database Output</h1>
     <ul>
-    <% model.get("results").each { result -> %>
-       <li> ${result} </li>
-    <% } %>
+    <#list results as x>
+      <li> ${x} </li>
+    </#list>
     </ul>
 
 </div>

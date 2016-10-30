@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <% render "header.html" %>
+  <#include "header.ftl">
 </head>
 
 <body>
 
-  <% render "nav.html" %>
+  <#include "nav.ftl">
 
 <div class="container">
-  ${model.get("message")}
+  ${message}
 </div>
 
 </body>

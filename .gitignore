@@ -1,12 +1,4 @@
-# Gradle
-.gradle/
-build/
-logs/
-out/
-
-# IDEA
+target
+.env
 .idea/
 *.iml
-*.ipr
-*.iws
-.shelf
