@@ -1,1 +1,1 @@
-web: build/install/mae-be/bin/mae-be
+web:    java -jar target/helloworld.jar

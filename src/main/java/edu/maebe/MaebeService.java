@@ -1,7 +1,6 @@
 package edu.maebe;
 
 import com.beust.jcommander.JCommander;
-import com.heroku.sdk.jdbc.DatabaseUrl;
 import edu.maebe.handlers.JournalCreateHandler;
 import edu.maebe.handlers.JournalIndexHandler;
 import edu.maebe.sql2omodel.Sql2oModel;
@@ -13,14 +12,9 @@ import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.sql2o.converters.UUIDConverter;
 import org.sql2o.quirks.PostgresQuirks;
-import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -49,7 +43,6 @@ public class MaebeService
         Sql2o sql2o = new Sql2o(System.getenv("JDBC_DATABASE_URL"),
                                 System.getenv("JDBC_DATABASE_USERNAME"), System.getenv("JDBC_DATABASE_PASSWORD"), new PostgresQuirks() {
             {
-                // make sure we use default UUID converter.
                 converters.put(UUID.class, new UUIDConverter());
             }
         });
