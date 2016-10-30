@@ -33,10 +33,9 @@ public class Main
         logger.finest("Options.database = " + options.database);
         logger.finest("Options.dbHost = " + options.dbHost);
         logger.finest("Options.dbUsername = " + options.dbUsername);
-        logger.finest("Options.dbPort = " + options.dbPort);
-        logger.finest("Options.servicePort = " + options.servicePort);
+        logger.finest("Options.dbPort = " + System.getenv("PORT"));
 
-        port(options.servicePort);
+        port(Integer.valueOf(System.getenv("PORT")));
 
         Sql2o sql2o = new Sql2o(System.getenv("JDBC_DATABASE_URL"),
                                 System.getenv("JDBC_DATABASE_USERNAME"), System.getenv("JDBC_DATABASE_PASSWORD"), new PostgresQuirks() {
