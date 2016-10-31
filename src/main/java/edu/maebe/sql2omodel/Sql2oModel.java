@@ -20,39 +20,6 @@ public class Sql2oModel implements Model {
         uuidGenerator = new RandomUuidGenerator();
     }
 
-    //diapers
-    @Override
-    public UUID createDiaperEntry(boolean hasPee, boolean hasPoop) {
-        try (Connection conn = sql2o.beginTransaction()) {
-            UUID DiaperEntryUuid = uuidGenerator.generate();
-            conn.createQuery("insert into diaperEntries(id, hasPee, hasPoop, date) VALUES (:id, :hasPee, :hasPoop, :date)")
-                    .addParameter("id", DiaperEntryUuid)
-                    .addParameter("hasPee", hasPee)
-                    .addParameter("hasPoop", hasPoop)
-                    .addParameter("date", new Date())
-                    .executeUpdate();
-            conn.commit();
-            return DiaperEntryUuid;
-        }
-    }
-
-    @Override
-    public List<DiaperEntry> getAllDiaperEntries() {
-        try (Connection conn = sql2o.open()) {
-            return conn.createQuery("select * from DiaperEntries").executeAndFetch(DiaperEntry.class);
-        }
-    }
-
-    @Override
-    public boolean existDiaperEntry(UUID entry) {
-        try (Connection conn = sql2o.open()) {
-            List<DiaperEntry> DiaperEntries = conn.createQuery("select * from DiaperEntries where id=:entry")
-                    .addParameter("entry", entry)
-                    .executeAndFetch(DiaperEntry.class);
-            return DiaperEntries.size() > 0;
-        }
-    }
-
     //journals
     @Override
     public UUID createJournal(String type, String value) {
@@ -90,13 +57,18 @@ public class Sql2oModel implements Model {
     //mood rating
     @Override
     public UUID createMoodRating(int agreeableness, int conscientiousness, int extraversion, int openness, int anger,
-                                 int anxiety, int depression, int immoderation, int selfConsciousness, int vulnerability,
-                                 int challenge, int closeness, int curiosity, int excitement, int harmony, int ideal,
-                                 int liberty, int love, int practicality, int selfExpression, int stability, int structure)
+                                 int anxiety, int depression, int immoderation, int selfConsciousness, int vulnerability)
     {
         try (Connection conn = sql2o.beginTransaction()) {
             UUID MoodRatingUuid = uuidGenerator.generate();
-            conn.createQuery("insert into moodRatings(id, type, value, date) VALUES (:id, :type, :value, :date)")
+            conn.createQuery("insert into mood_ratings(id, agreeableness, conscientiousness, " +
+                                     "extraversion, openness, anger, " +
+                                     "anxiety, depression, immoderation, " +
+                                     "selfConsciousness, vulnerability, date) " +
+                                     "VALUES (:id, :agreeableness, :conscientiousness, " +
+                                     ":extraversion, :openness, :anger, " +
+                                     ":anxiety, :depression, :immoderation, " +
+                                     ":selfConsciousness, :vulnerability, :date)")
                     .addParameter("id", MoodRatingUuid)
                     .addParameter("agreeableness", agreeableness)
                     .addParameter("conscientiousness", conscientiousness)
@@ -108,6 +80,59 @@ public class Sql2oModel implements Model {
                     .addParameter("immoderation", immoderation)
                     .addParameter("selfConsciousness", selfConsciousness)
                     .addParameter("vulnerability", vulnerability)
+                    .addParameter("date", new Date())
+                    .executeUpdate();
+            conn.commit();
+            return MoodRatingUuid;
+        }
+    }
+
+    @Override
+    public List<MoodRating> getAllMoodRatings() {
+        try (Connection conn = sql2o.open()) {
+            List<MoodRating> MoodRatings = conn.createQuery("select * from mood_ratings")
+                    .addColumnMapping("agreeableness", "currentMood.agreeableness")
+                    .addColumnMapping("conscientiousness", "currentMood.conscientiousness")
+                    .addColumnMapping("extraversion", "currentMood.extraversion")
+                    .addColumnMapping("openness", "currentMood.openness")
+                    .addColumnMapping("anger", "emotionalRange.anger")
+                    .addColumnMapping("anxiety", "emotionalRange.anxiety")
+                    .addColumnMapping("depression", "emotionalRange.depression")
+                    .addColumnMapping("immoderation", "emotionalRange.immoderation")
+                    .addColumnMapping("selfConsciousness", "emotionalRange.selfConsciousness")
+                    .addColumnMapping("vulnerability", "emotionalRange.vulnerability")
+                    .executeAndFetch(MoodRating.class);
+            return MoodRatings;
+        }
+    }
+
+    @Override
+    public boolean existMoodRating(UUID rating) {
+        try (Connection conn = sql2o.open()) {
+            List<MoodRating> MoodRatings = conn.createQuery("select * from mood_ratings where id=:rating")
+                    .addParameter("rating", rating)
+                    .executeAndFetch(MoodRating.class);
+            return MoodRatings.size() > 0;
+        }
+    }
+
+    //needs
+    @Override
+    public UUID createNeed(int challenge, int closeness, int curiosity, int excitement, int harmony, int ideal,
+                                 int liberty, int love, int practicality, int selfExpression, int stability, int structure)
+    {
+        try (Connection conn = sql2o.beginTransaction()) {
+            UUID NeedUuid = uuidGenerator.generate();
+            conn.createQuery("insert into needs(id, challenge, closeness, " +
+                                     "curiosity, excitement, harmony," +
+                                     "ideal, liberty, love," +
+                                     "practicality, selfExpression, stability," +
+                                     "structure, date) VALUES (:id, :challenge, :closeness, " +
+                                     ":curiosity, :excitement, :harmony, " +
+                                     ":ideal, :liberty, :love, " +
+                                     ":practicality, :selfExpression, :stability, " +
+                                     ":structure, :date)")
+                    .addParameter("id", NeedUuid)
                     .addParameter("challenge", challenge)
                     .addParameter("closeness", closeness)
                     .addParameter("curiosity", curiosity)
@@ -123,78 +148,26 @@ public class Sql2oModel implements Model {
                     .addParameter("date", new Date())
                     .executeUpdate();
             conn.commit();
-            return MoodRatingUuid;
+            return NeedUuid;
         }
     }
 
     @Override
-    public List<MoodRating> getAllMoodRatings() {
+    public List<Need> getAllNeeds() {
         try (Connection conn = sql2o.open()) {
-            List<MoodRating> MoodRatings = conn.createQuery("select * from moodRatings")
-                    .addColumnMapping("anger", "emotionalRange.anger")
-                    .addColumnMapping("anxiety", "emotionalRange.anxiety")
-                    .addColumnMapping("depression", "emotionalRange.depression")
-                    .addColumnMapping("immoderation", "emotionalRange.immoderation")
-                    .addColumnMapping("selfConsciousness", "emotionalRange.selfConsciousness")
-                    .addColumnMapping("vulnerability", "emotionalRange.vulnerability")
-                    .addColumnMapping("challenge", "needs.challenge")
-                    .addColumnMapping("closeness", "needs.closeness")
-                    .addColumnMapping("curiosity", "needs.curiosity")
-                    .addColumnMapping("excitement", "needs.excitement")
-                    .addColumnMapping("harmony", "needs.harmony")
-                    .addColumnMapping("ideal", "needs.ideal")
-                    .addColumnMapping("liberty", "needs.liberty")
-                    .addColumnMapping("love", "needs.love")
-                    .addColumnMapping("practicality", "needs.practicality")
-                    .addColumnMapping("selfExpression", "needs.selfExpression")
-                    .addColumnMapping("stability", "needs.stability")
-                    .addColumnMapping("structure", "needs.structure")
-                    .executeAndFetch(MoodRating.class);
-            return MoodRatings;
+            List<Need> Needs = conn.createQuery("select * from needs")
+                    .executeAndFetch(Need.class);
+            return Needs;
         }
     }
 
     @Override
-    public boolean existMoodRating(UUID rating) {
+    public boolean existNeed(UUID need) {
         try (Connection conn = sql2o.open()) {
-            List<MoodRating> MoodRatings = conn.createQuery("select * from MoodRatings where id=:rating")
-                    .addParameter("rating", rating)
-                    .executeAndFetch(MoodRating.class);
-            return MoodRatings.size() > 0;
-        }
-    }
-
-    //stats
-    @Override
-    public UUID createStatsEntry(Double heightInCm, Double weightInKg) {
-        try (Connection conn = sql2o.beginTransaction()) {
-            UUID StatsEntryUuid = uuidGenerator.generate();
-            conn.createQuery("insert into statsEntries(id, type, heightInCm, weightInKg) VALUES (:id, :heightInCm, :weightInKg, :date)")
-                    .addParameter("id", StatsEntryUuid)
-                    .addParameter("heightInCm", heightInCm)
-                    .addParameter("weightInKg", weightInKg)
-                    .addParameter("date", new Date())
-                    .executeUpdate();
-            conn.commit();
-            return StatsEntryUuid;
-        }
-    }
-
-    @Override
-    public List<StatsEntry> getAllStatsEntries() {
-        try (Connection conn = sql2o.open()) {
-            List<StatsEntry> StatsEntries = conn.createQuery("select * from StatsEntries").executeAndFetch(StatsEntry.class);
-            return StatsEntries;
-        }
-    }
-
-    @Override
-    public boolean existStatsEntry(UUID entry) {
-        try (Connection conn = sql2o.open()) {
-            List<StatsEntry> StatsEntries = conn.createQuery("select * from StatsEntries where id=:entry")
-                    .addParameter("entry", entry)
-                    .executeAndFetch(StatsEntry.class);
-            return StatsEntries.size() > 0;
+            List<Need> Needs = conn.createQuery("select * from needs where id=:need")
+                    .addParameter("need", need)
+                    .executeAndFetch(Need.class);
+            return Needs.size() > 0;
         }
     }
 }
