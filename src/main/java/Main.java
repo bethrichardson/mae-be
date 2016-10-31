@@ -13,6 +13,11 @@ import org.sql2o.quirks.PostgresQuirks;
 import spark.template.freemarker.FreeMarkerEngine;
 
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -24,6 +29,13 @@ public class Main
 {
 
     private static final Logger logger = Logger.getLogger(Main.class.getCanonicalName());
+
+    public static String readFile(String path, Charset encoding)
+            throws IOException
+    {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
+    }
 
     public static void main( String[] args) {
         CommandLineOptions options = new CommandLineOptions();
@@ -44,15 +56,20 @@ public class Main
             }
         });
 
+        System.out.println("Working Directory = " +
+                                   System.getProperty("user.dir"));
 
         try (Connection conn = sql2o.beginTransaction()) {
-            conn.createQuery("CREATE TABLE IF NOT EXISTS journals (\n" +
-                                     "    id uuid primary key,\n" +
-                                     "    type text not null,\n" +
-                                     "    value text,\n" +
-                                     "    date date\n" +
-                                     ");")
-                    .executeUpdate();
+
+            String databaseSetup = readFile("src/main/resources/db/schema.sql", StandardCharsets.UTF_8);
+            conn.createQuery(databaseSetup).executeUpdate();
+//            conn.createQuery("CREATE TABLE IF NOT EXISTS journals (\n" +
+//                                     "    id uuid primary key,\n" +
+//                                     "    type text not null,\n" +
+//                                     "    value text,\n" +
+//                                     "    date date\n" +
+//                                     ");")
+//                    .executeUpdate();
             conn.commit();
         }
 

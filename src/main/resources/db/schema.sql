@@ -1,18 +1,11 @@
-CREATE TABLE diaperEntries (
-    id uuid primary key,
-    hasPee boolean not null,
-    hasPoop boolean not null,
-    date date not null
-);
-
-CREATE TABLE journals (
+CREATE TABLE IF NOT EXISTS journals (
     id uuid primary key,
     type text not null,
     value text,
     date date not null
 );
 
-CREATE TABLE journals (
+CREATE TABLE IF NOT EXISTS mood_ratings (
     id uuid primary key,
     agreeableness int not null,
     conscientiousness int not null,
@@ -24,6 +17,11 @@ CREATE TABLE journals (
     immoderation int not null,
     selfConciousness int not null,
     vulnerability int not null,
+    date date not null
+);
+
+CREATE TABLE IF NOT EXISTS needs (
+    id uuid primary key,
     challenge int not null,
     closeness int not null,
     curiosity int not null,
@@ -38,12 +36,3 @@ CREATE TABLE journals (
     structure int not null,
     date date not null
 );
-
-CREATE TABLE statsEntries (
-    id uuid primary key,
-    heightInCm double not null,
-    weightInKg double not null,
-    date date not null
-);
-
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO maebe;
