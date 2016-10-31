@@ -56,30 +56,31 @@ public class Sql2oModel implements Model {
 
     //mood rating
     @Override
-    public UUID createMoodRating(int agreeableness, int conscientiousness, int extraversion, int openness, int anger,
-                                 int anxiety, int depression, int immoderation, int selfConsciousness, int vulnerability)
+    public UUID createMoodRating(MoodRating moodRating)
     {
         try (Connection conn = sql2o.beginTransaction()) {
             UUID MoodRatingUuid = uuidGenerator.generate();
-            conn.createQuery("insert into mood_ratings(id, agreeableness, conscientiousness, " +
-                                     "extraversion, openness, anger, " +
-                                     "anxiety, depression, immoderation, " +
-                                     "selfConsciousness, vulnerability, date) " +
-                                     "VALUES (:id, :agreeableness, :conscientiousness, " +
-                                     ":extraversion, :openness, :anger, " +
-                                     ":anxiety, :depression, :immoderation, " +
-                                     ":selfConsciousness, :vulnerability, :date)")
+            MoodRating.EmotionalRange emotionalRange = moodRating.getEmotionalRange();
+            MoodRating.Personality personality = moodRating.getPersonality();
+            conn.createQuery("insert into mood_ratings(id, big5_agreeableness, big5_conscientiousness, " +
+                                     "big5_extraversion, big5_openness, facet_anger, " +
+                                     "facet_anxiety, facet_depression, facet_immoderation, " +
+                                     "facet_self_consciousness, facet_vulnerability, date) " +
+                                     "VALUES (:id, :big5_agreeableness, :big5_conscientiousness, " +
+                                     ":big5_extraversion, :big5_openness, :facet_anger, " +
+                                     ":facet_anxiety, :facet_depression, :facet_immoderation, " +
+                                     ":facet_self_consciousness, :facet_vulnerability, :date)")
                     .addParameter("id", MoodRatingUuid)
-                    .addParameter("agreeableness", agreeableness)
-                    .addParameter("conscientiousness", conscientiousness)
-                    .addParameter("extraversion", extraversion)
-                    .addParameter("openness", openness)
-                    .addParameter("anger", anger)
-                    .addParameter("anxiety", anxiety)
-                    .addParameter("depression", depression)
-                    .addParameter("immoderation", immoderation)
-                    .addParameter("selfConsciousness", selfConsciousness)
-                    .addParameter("vulnerability", vulnerability)
+                    .addParameter("big5_agreeableness", personality.getBig5_agreeableness())
+                    .addParameter("big5_conscientiousness", personality.getBig5_conscientiousness())
+                    .addParameter("big5_extraversion", personality.getBig5_extraversion())
+                    .addParameter("big5_openness", personality.getBig5_openness())
+                    .addParameter("facet_anger", emotionalRange.getFacet_anger())
+                    .addParameter("facet_anxiety", emotionalRange.getFacet_anxiety())
+                    .addParameter("facet_depression", emotionalRange.getFacet_depression())
+                    .addParameter("facet_immoderation", emotionalRange.getFacet_immoderation())
+                    .addParameter("facet_self_consciousness", emotionalRange.getFacet_self_consciousness())
+                    .addParameter("facet_vulnerability", emotionalRange.getFacet_vulnerability())
                     .addParameter("date", new Date())
                     .executeUpdate();
             conn.commit();
@@ -91,16 +92,16 @@ public class Sql2oModel implements Model {
     public List<MoodRating> getAllMoodRatings() {
         try (Connection conn = sql2o.open()) {
             List<MoodRating> MoodRatings = conn.createQuery("select * from mood_ratings")
-                    .addColumnMapping("agreeableness", "currentMood.agreeableness")
-                    .addColumnMapping("conscientiousness", "currentMood.conscientiousness")
-                    .addColumnMapping("extraversion", "currentMood.extraversion")
-                    .addColumnMapping("openness", "currentMood.openness")
-                    .addColumnMapping("anger", "emotionalRange.anger")
-                    .addColumnMapping("anxiety", "emotionalRange.anxiety")
-                    .addColumnMapping("depression", "emotionalRange.depression")
-                    .addColumnMapping("immoderation", "emotionalRange.immoderation")
-                    .addColumnMapping("selfConsciousness", "emotionalRange.selfConsciousness")
-                    .addColumnMapping("vulnerability", "emotionalRange.vulnerability")
+                    .addColumnMapping("big5_agreeableness", "personality.big5_agreeableness")
+                    .addColumnMapping("big5_conscientiousness", "personality.big5_conscientiousness")
+                    .addColumnMapping("big5_extraversion", "personality.big5_extraversion")
+                    .addColumnMapping("big5_openness", "personality.big5_openness")
+                    .addColumnMapping("facet_anger", "emotionalRange.facet_anger")
+                    .addColumnMapping("facet_anxiety", "emotionalRange.facet_anxiety")
+                    .addColumnMapping("facet_depression", "emotionalRange.facet_depression")
+                    .addColumnMapping("facet_immoderation", "emotionalRange.facet_immoderation")
+                    .addColumnMapping("facet_self_consciousness", "emotionalRange.facet_self_consciousness")
+                    .addColumnMapping("facet_vulnerability", "emotionalRange.facet_vulnerability")
                     .executeAndFetch(MoodRating.class);
             return MoodRatings;
         }
@@ -118,33 +119,32 @@ public class Sql2oModel implements Model {
 
     //needs
     @Override
-    public UUID createNeed(int challenge, int closeness, int curiosity, int excitement, int harmony, int ideal,
-                                 int liberty, int love, int practicality, int selfExpression, int stability, int structure)
+    public UUID createNeed(Need need)
     {
         try (Connection conn = sql2o.beginTransaction()) {
             UUID NeedUuid = uuidGenerator.generate();
-            conn.createQuery("insert into needs(id, challenge, closeness, " +
-                                     "curiosity, excitement, harmony," +
-                                     "ideal, liberty, love," +
-                                     "practicality, selfExpression, stability," +
-                                     "structure, date) VALUES (:id, :challenge, :closeness, " +
-                                     ":curiosity, :excitement, :harmony, " +
-                                     ":ideal, :liberty, :love, " +
-                                     ":practicality, :selfExpression, :stability, " +
-                                     ":structure, :date)")
+            conn.createQuery("insert into needs(id, need_challenge, need_closeness, " +
+                                     "need_curiosity, need_excitement, need_harmony," +
+                                     "need_ideal, need_liberty, need_love," +
+                                     "need_practicality, need_self_expression, need_stability," +
+                                     "need_structure, date) VALUES (:id, :need_challenge, :need_closeness, " +
+                                     ":need_curiosity, :need_excitement, :need_harmony, " +
+                                     ":need_ideal, :need_liberty, :need_love, " +
+                                     ":need_practicality, :need_self_expression, :need_stability, " +
+                                     ":need_structure, :date)")
                     .addParameter("id", NeedUuid)
-                    .addParameter("challenge", challenge)
-                    .addParameter("closeness", closeness)
-                    .addParameter("curiosity", curiosity)
-                    .addParameter("excitement", excitement)
-                    .addParameter("harmony", harmony)
-                    .addParameter("ideal", ideal)
-                    .addParameter("liberty", liberty)
-                    .addParameter("love", love)
-                    .addParameter("practicality", practicality)
-                    .addParameter("selfExpression", selfExpression)
-                    .addParameter("stability", stability)
-                    .addParameter("structure", structure)
+                    .addParameter("need_challenge", need.getNeed_challenge())
+                    .addParameter("need_closeness", need.getNeed_closeness())
+                    .addParameter("need_curiosity", need.getNeed_curiosity())
+                    .addParameter("need_excitement", need.getNeed_excitement())
+                    .addParameter("need_harmony", need.getNeed_harmony())
+                    .addParameter("need_ideal", need.getNeed_ideal())
+                    .addParameter("need_liberty", need.getNeed_liberty())
+                    .addParameter("need_love", need.getNeed_love())
+                    .addParameter("need_practicality", need.getNeed_practicality())
+                    .addParameter("need_self_expression", need.getNeed_self_expression())
+                    .addParameter("need_stability", need.getNeed_stability())
+                    .addParameter("need_structure", need.getNeed_structure())
                     .addParameter("date", new Date())
                     .executeUpdate();
             conn.commit();
