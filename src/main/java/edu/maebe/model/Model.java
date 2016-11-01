@@ -10,14 +10,12 @@ public interface Model {
     boolean existJournal(UUID journal);
 
     //MoodRating
-    UUID createMoodRating(int agreeableness, int conscientiousness, int extraversion, int openness, int anger,
-                          int anxiety, int depression, int immoderation, int selfConsciousness, int vulnerability);
+    UUID createMoodRating(MoodRating moodRating);
     List<MoodRating> getAllMoodRatings();
     boolean existMoodRating(UUID rating);
 
     //Need
-    UUID createNeed(int challenge, int closeness, int curiosity, int excitement, int harmony, int ideal,
-                          int liberty, int love, int practicality, int selfExpression, int stability, int structure);
+    UUID createNeed(Need need);
     List<Need> getAllNeeds();
     boolean existNeed(UUID need);
 }
