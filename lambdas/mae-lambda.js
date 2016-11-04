@@ -82,17 +82,28 @@ function createJournalAttributes(journal) {
  * Sets the journal in the session and prepares the speech to reply to the user.
  */
 function setJournalInSession(intent, session, callback) {
-    const cardTitle = intent.name;
+    const intentName = intent.name;
     const journalSlot = intent.slots.Journal;
     let repromptText = '';
     let sessionAttributes = {};
     const shouldEndSession = false;
     let speechOutput = '';
+    let requestType = "journal";
+
+    if (intentName === 'MyHeightIsIntent') {
+        requestType = "height";
+    } else if (intentName === 'MyWeightIsIntent') {
+        requestType = "weight";
+    } else if (intentName === 'MySleepIsIntent') {
+        requestType = "sleep";
+    } else if (intentName === 'MyDiaperIsIntent') {
+        requestType = "diaper";
+    }
 
     var endpoint = 'mae-be.herokuapp.com';
     if (journalSlot) {
         var data = {
-            type: "journal",
+            type: requestType,
             value: journalSlot.value
         };
 
@@ -138,17 +149,17 @@ function setJournalInSession(intent, session, callback) {
         repromptText = "I'm not sure what your journal entry is. You can tell me your " +
             'entry by saying, my entry is.';
         callback(sessionAttributes,
-            buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+            buildSpeechletResponse(intentName, speechOutput, repromptText, shouldEndSession));
     }
 
     function finishWithJournal(journalSlot) {
         const journal = journalSlot.value;
         sessionAttributes = createJournalAttributes(journal);
-        speechOutput = `Your journal entry is: ${journal}`;
+        speechOutput = `${journal}`;
         repromptText = "You can ask me your journal entry by saying, what's my journal entry?";
 
         callback(sessionAttributes,
-            buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+            buildSpeechletResponse(intentName, speechOutput, repromptText, shouldEndSession));
 
     }
 
@@ -230,7 +241,8 @@ function onIntent(intentRequest, session, callback) {
     const intentName = intentRequest.intent.name;
 
     // Dispatch to your skill's intent handlers
-    if (intentName === 'MyJournalIsIntent') {
+    if (intentName === 'MyJournalIsIntent' || intentName === 'MyWeightIsIntent' || intentName === 'MySleepIsIntent'
+        || intentName === 'MyHeightIsIntent' || intentName === 'MyDiaperIsIntent') {
         setJournalInSession(intent, session, callback);
     } else if (intentName === 'WhatsMyJournalIntent') {
         getJournalFromSession(intent, session, callback);
