@@ -85,7 +85,7 @@ public class MoodRating {
 
     public String getBiggestEmotion() {
         double biggestEmotionValue = 0.0;
-        double baselineEmotionalValue = 0.1;
+        double baselineEmotionalValue = 0.001;
         String biggestEmotion = getEmotionalText("");
         Field[] fields = MoodRating.EmotionalRange.class.getDeclaredFields();
         for (Field field : fields) {

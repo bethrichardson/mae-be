@@ -119,6 +119,7 @@ function setJournalInSession(intent, session, callback) {
             // Or could use JSON.parse(responseString) here to get at individual properties.
             res.on('end', function () {
                 console.log('Maebe Response: ' + responseString);
+                journalSlot.value = responseString;
                 finishWithJournal(journalSlot)
             });
 

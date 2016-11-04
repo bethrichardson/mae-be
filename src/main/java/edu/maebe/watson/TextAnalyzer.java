@@ -2,6 +2,7 @@ package edu.maebe.watson;
 
 import com.ibm.watson.developer_cloud.personality_insights.v3.PersonalityInsights;
 import com.ibm.watson.developer_cloud.personality_insights.v3.model.Profile;
+import com.ibm.watson.developer_cloud.personality_insights.v3.model.ProfileOptions;
 import edu.maebe.model.Journal;
 import edu.maebe.model.Model;
 
@@ -12,7 +13,7 @@ public class TextAnalyzer {
     private Model model;
     public static final String JOURNAL_TYPE = "journal";
     private boolean enoughTextForAnalysis;
-    private static final int MINIMUM_TEXT_CHARACTER_COUNT = 600;
+    private static final int MINIMUM_TEXT_CHARACTER_COUNT = 2000;
 
     public TextAnalyzer(Model model){
         this.model = model;
@@ -27,7 +28,7 @@ public class TextAnalyzer {
             personalityScore = buildPersonalityScore(profile);
         } else {
             Profile profile = new Profile();
-            personalityScore = new PersonalityScore(profile);
+            personalityScore = new PersonalityScore();
         }
 
         return personalityScore;
@@ -45,8 +46,11 @@ public class TextAnalyzer {
     private Profile getPersonalityProfileFromWatson(String text) {
         PersonalityInsights service = new PersonalityInsights("2016-10-19");
         service.setUsernameAndPassword(WatsonCredentials.username, WatsonCredentials.password);
+        ProfileOptions.Builder builder = new ProfileOptions.Builder();
+        builder.rawScores(true)
+                .text(text);
 
-        Profile profile = service.getProfile(text).execute();
+        Profile profile = service.getProfile(builder.build()).execute();
         System.out.println(profile);
 
         return profile;
@@ -69,6 +73,7 @@ public class TextAnalyzer {
                 }
             } else {
                 enoughTextForAnalysis = false;
+                break;
             }
         }
 

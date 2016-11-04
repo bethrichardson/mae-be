@@ -14,6 +14,12 @@ public class PersonalityScore {
     MoodRating moodRating;
     Need need;
 
+    public PersonalityScore() {
+        this.moodRating = new MoodRating();
+        this.need = new Need();
+    }
+
+
     public PersonalityScore(Profile profile) {
         List<Trait> traitsList = profile.getPersonality();
         List<Trait> needsList = profile.getNeeds();
@@ -21,7 +27,7 @@ public class PersonalityScore {
         need = new Need();
         for (Trait trait:traitsList) {
             try {
-                moodRating.setField(trait, trait.getPercentile());
+                moodRating.setField(trait, trait.getRawScore());
             } catch (NoSuchFieldException e) {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -30,7 +36,7 @@ public class PersonalityScore {
 
         for (Trait trait:needsList) {
             try {
-                need.setField(trait.getTraitId(), trait.getPercentile());
+                need.setField(trait.getTraitId(), trait.getRawScore());
             } catch (NoSuchFieldException e) {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
