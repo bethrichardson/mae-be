@@ -16,6 +16,6 @@ public class JournalIndexHandler extends AbstractRequestHandler<EmptyPayload> {
     protected Answer processImpl(EmptyPayload value, Map urlParams) {
             String json = dataToJson(model.getAllJournals());
             return Answer.ok(json);
-    }
+    } // TODO: Use query param to return journals of given type
 
 }
