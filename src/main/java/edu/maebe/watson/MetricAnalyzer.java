@@ -7,14 +7,15 @@ public class MetricAnalyzer {
     @Getter
     String value;
     @Getter
-    int valueInDigits;
-    @Getter
     String type;
 
     public MetricAnalyzer(String type, String value) {
         this.value = getRidOfUnits(value);
-        valueInDigits = Integer.parseInt(this.value);
         this.type = type;
+    }
+
+    public int getValueInDigits(){
+        return Integer.parseInt(this.value);
     }
 
     private String getRidOfUnits(String value) {
