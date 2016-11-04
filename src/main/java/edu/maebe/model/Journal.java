@@ -15,4 +15,10 @@ public class Journal {
     String type;
     @Setter(AccessLevel.PACKAGE) String value;
     Date date;
+
+    public static final String JOURNAL_TYPE_TEXT = "journal";
+    public static final String JOURNAL_TYPE_HEIGHT = "height";
+    public static final String JOURNAL_TYPE_WEIGHT = "weight";
+    public static final String JOURNAL_TYPE_SLEEP = "sleep";
+    public static final String JOURNAL_TYPE_DIAPER = "diaper";
 }

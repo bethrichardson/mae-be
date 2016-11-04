@@ -10,6 +10,7 @@ import java.util.ListIterator;
 
 public class TextAnalyzer {
     private Model model;
+    public static final String JOURNAL_TYPE = "journal";
     private boolean enoughTextForAnalysis;
     private static final int MINIMUM_TEXT_CHARACTER_COUNT = 600;
 
@@ -55,13 +56,17 @@ public class TextAnalyzer {
         String textForAnalysis = baseText;
         List<Journal> allJournals = model.getAllJournals();
         enoughTextForAnalysis = true;
+        Journal currentJournal;
 
         ListIterator<Journal> journalIterator = allJournals.listIterator(allJournals.size());
         journalIterator.previous();
 
         while (textForAnalysis.length() < MINIMUM_TEXT_CHARACTER_COUNT) {
             if (journalIterator.hasPrevious()) {
-                textForAnalysis += " " + journalIterator.previous().getValue();
+                currentJournal = journalIterator.previous();
+                if (currentJournal.getType().equals(Journal.JOURNAL_TYPE_TEXT)){
+                    textForAnalysis += " " + currentJournal.getValue();
+                }
             } else {
                 enoughTextForAnalysis = false;
             }
