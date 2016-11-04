@@ -1,21 +1,13 @@
 package edu.maebe.handlers;
 
-import com.ibm.watson.developer_cloud.personality_insights.v3.model.Profile;
-import com.ibm.watson.developer_cloud.personality_insights.v3.PersonalityInsights;
 import edu.maebe.AbstractRequestHandler;
 import edu.maebe.Answer;
 import edu.maebe.model.Journal;
 import edu.maebe.model.Model;
-import edu.maebe.model.MoodRating;
+import edu.maebe.watson.MetricAnalyzer;
 import edu.maebe.watson.PersonalityScore;
 import edu.maebe.watson.TextAnalyzer;
-import edu.maebe.watson.WatsonCredentials;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.UUID;
 
 public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPayload> {
 
@@ -28,15 +20,35 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
 
     @Override
     protected Answer processImpl(NewJournalPayload value, Map<String, String> urlParams) {
-        UUID id = model.createJournal(value.getType(), value.getValue());
-        String textForAnalysis = value.getValue();
 
-        TextAnalyzer textAnalyzer = new TextAnalyzer(model);
-        PersonalityScore personalityScore = textAnalyzer.getPersonalityScore(textForAnalysis);
+        if (value.getType().equals(Journal.JOURNAL_TYPE_TEXT)) {
+            String textForAnalysis = value.getValue();
+            model.createJournal(value.getType(), value.getValue());
+            TextAnalyzer textAnalyzer = new TextAnalyzer(model);
+            PersonalityScore personalityScore = textAnalyzer.getPersonalityScore(textForAnalysis);
 
-        return new Answer(200, personalityScore.toString());
+            String baseText  = "You seem like you have been feeling ";
+            String endText = " lately.";
+            String textResponse =  baseText + personalityScore.getMoodRating().getBiggestEmotion() + endText;
+
+            return new Answer(200, textResponse);
+        } else {
+
+            MetricAnalyzer metricAnalyzer = new MetricAnalyzer(value.getType(), value.getValue());
+            String textResponse = metricAnalyzer.getResponseFromMetric();
+            String metricValue;
+
+            if (value.getType().equals(Journal.JOURNAL_TYPE_DIAPER)) {
+                metricValue = metricAnalyzer.getValue();
+            } else {
+                metricValue = Integer.toString(metricAnalyzer.getValueInDigits());
+            }
+
+            model.createJournal(value.getType(), metricValue);
+            System.out.println("Result : "+ metricValue);
+
+            return new Answer(200, textResponse);
+        }
 
     }
-
-
 }
