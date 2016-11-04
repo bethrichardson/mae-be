@@ -22,7 +22,7 @@ public class MetricAnalyzer {
         valueWithNoUnits = valueWithNoUnits.replace(" hours","");
         valueWithNoUnits = valueWithNoUnits.replace(" pounds","");
         valueWithNoUnits = valueWithNoUnits.replace(" inches","");
-
+        valueWithNoUnits = valueWithNoUnits.replace(" lbs","");
         valueWithNoUnits = valueWithNoUnits.replace("\"","");
         return valueWithNoUnits;
     }
