@@ -105,7 +105,7 @@ function setJournalInSession(intent, session, callback) {
         var data = {
             type: requestType,
             value: journalSlot.value,
-            userId: session.userId
+            userId: session.user.userId
         };
 
         var options = {
