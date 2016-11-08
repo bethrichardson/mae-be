@@ -18,10 +18,12 @@ import java.util.UUID;
 public class MoodRating {
     private UUID id;
     private Date date;
+    private String userId;
     private Personality personality;
     private EmotionalRange emotionalRange;
 
-    public MoodRating() {
+    public MoodRating(String userId) {
+        this.userId = userId;
         this.personality = new Personality();
         this.emotionalRange = new EmotionalRange();
     }

@@ -22,13 +22,14 @@ public class Sql2oModel implements Model {
 
     //journals
     @Override
-    public UUID createJournal(String type, String value) {
+    public UUID createJournal(String type, String value, String user) {
         try (Connection conn = sql2o.beginTransaction()) {
             UUID journalUuid = uuidGenerator.generate();
-            conn.createQuery("insert into journals(id, type, value, date) VALUES (:id, :type, :value, :date)")
+            conn.createQuery("insert into journals(id, type, value, alexa, date) VALUES (:id, :type, :value, :alexa, :date)")
                     .addParameter("id", journalUuid)
                     .addParameter("type", type)
                     .addParameter("value", value)
+                    .addParameter("alexa", user)
                     .addParameter("date", new Date())
                     .executeUpdate();
             conn.commit();
@@ -37,9 +38,35 @@ public class Sql2oModel implements Model {
     }
 
     @Override
-    public List<Journal> getAllJournals() {
+    public List<Journal> getAllJournals(String user) {
+        String query;
+        if (user == null) {
+            query = "select * from journals where alexa is null";
+        } else {
+            query = "select * from journals where alexa = '" + user + "'";
+        }
+
         try (Connection conn = sql2o.open()) {
-            List<Journal> journals = conn.createQuery("select * from journals").executeAndFetch(Journal.class);
+            List<Journal> journals = conn.createQuery(query)
+                    .addColumnMapping("alexa", "user")
+                    .executeAndFetch(Journal.class);
+            return journals;
+        }
+    }
+
+    @Override
+    public List<Journal> getAllJournals(String user, String type) {
+        String query;
+        if (user == null) {
+            query = "select * from journals where alexa is null and type = '" + type + "'";
+        } else {
+            query = "select * from journals where alexa = '" + user + "'and type = '" + type + "'";
+        }
+
+        try (Connection conn = sql2o.open()) {
+            List<Journal> journals = conn.createQuery(query)
+                    .addColumnMapping("alexa", "user")
+                    .executeAndFetch(Journal.class);
             return journals;
         }
     }
@@ -65,11 +92,11 @@ public class Sql2oModel implements Model {
             conn.createQuery("insert into mood_ratings(id, big5_agreeableness, big5_conscientiousness, " +
                                      "big5_extraversion, big5_openness, facet_anger, " +
                                      "facet_anxiety, facet_depression, facet_immoderation, " +
-                                     "facet_self_consciousness, facet_vulnerability, date) " +
+                                     "facet_self_consciousness, facet_vulnerability, alexa, date) " +
                                      "VALUES (:id, :big5_agreeableness, :big5_conscientiousness, " +
                                      ":big5_extraversion, :big5_openness, :facet_anger, " +
                                      ":facet_anxiety, :facet_depression, :facet_immoderation, " +
-                                     ":facet_self_consciousness, :facet_vulnerability, :date)")
+                                     ":facet_self_consciousness, :facet_vulnerability, :alexa, :date)")
                     .addParameter("id", MoodRatingUuid)
                     .addParameter("big5_agreeableness", personality.getBig5_agreeableness())
                     .addParameter("big5_conscientiousness", personality.getBig5_conscientiousness())
@@ -81,6 +108,7 @@ public class Sql2oModel implements Model {
                     .addParameter("facet_immoderation", emotionalRange.getFacet_immoderation())
                     .addParameter("facet_self_consciousness", emotionalRange.getFacet_self_consciousness())
                     .addParameter("facet_vulnerability", emotionalRange.getFacet_vulnerability())
+                    .addParameter("alexa", moodRating.getUserId())
                     .addParameter("date", new Date())
                     .executeUpdate();
             conn.commit();
@@ -89,9 +117,9 @@ public class Sql2oModel implements Model {
     }
 
     @Override
-    public List<MoodRating> getAllMoodRatings() {
+    public List<MoodRating> getAllMoodRatings(String user) {
         try (Connection conn = sql2o.open()) {
-            List<MoodRating> MoodRatings = conn.createQuery("select * from mood_ratings")
+            List<MoodRating> MoodRatings = conn.createQuery("select * from mood_ratings where alexa = " + "'" + user + "'")
                     .addColumnMapping("big5_agreeableness", "personality.big5_agreeableness")
                     .addColumnMapping("big5_conscientiousness", "personality.big5_conscientiousness")
                     .addColumnMapping("big5_extraversion", "personality.big5_extraversion")
@@ -102,6 +130,7 @@ public class Sql2oModel implements Model {
                     .addColumnMapping("facet_immoderation", "emotionalRange.facet_immoderation")
                     .addColumnMapping("facet_self_consciousness", "emotionalRange.facet_self_consciousness")
                     .addColumnMapping("facet_vulnerability", "emotionalRange.facet_vulnerability")
+                    .addColumnMapping("alexa", "userId")
                     .executeAndFetch(MoodRating.class);
             return MoodRatings;
         }
@@ -127,11 +156,11 @@ public class Sql2oModel implements Model {
                                      "need_curiosity, need_excitement, need_harmony," +
                                      "need_ideal, need_liberty, need_love," +
                                      "need_practicality, need_self_expression, need_stability," +
-                                     "need_structure, date) VALUES (:id, :need_challenge, :need_closeness, " +
+                                     "need_structure, alexa, date) VALUES (:id, :need_challenge, :need_closeness, " +
                                      ":need_curiosity, :need_excitement, :need_harmony, " +
                                      ":need_ideal, :need_liberty, :need_love, " +
                                      ":need_practicality, :need_self_expression, :need_stability, " +
-                                     ":need_structure, :date)")
+                                     ":need_structure, :alexa, :date)")
                     .addParameter("id", NeedUuid)
                     .addParameter("need_challenge", need.getNeed_challenge())
                     .addParameter("need_closeness", need.getNeed_closeness())
@@ -145,6 +174,7 @@ public class Sql2oModel implements Model {
                     .addParameter("need_self_expression", need.getNeed_self_expression())
                     .addParameter("need_stability", need.getNeed_stability())
                     .addParameter("need_structure", need.getNeed_structure())
+                    .addParameter("alexa", need.getUserId())
                     .addParameter("date", new Date())
                     .executeUpdate();
             conn.commit();
@@ -153,9 +183,9 @@ public class Sql2oModel implements Model {
     }
 
     @Override
-    public List<Need> getAllNeeds() {
+    public List<Need> getAllNeeds(String user) {
         try (Connection conn = sql2o.open()) {
-            List<Need> Needs = conn.createQuery("select * from needs")
+            List<Need> Needs = conn.createQuery("select * from needs where alexa = " + "'" + user + "'")
                     .executeAndFetch(Need.class);
             return Needs;
         }

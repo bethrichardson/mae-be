@@ -5,13 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import edu.maebe.handlers.EmptyPayload;
 import edu.maebe.model.Model;
+import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractRequestHandler<V extends Validable> implements RequestHandler<V>, Route {
@@ -38,15 +38,15 @@ public abstract class AbstractRequestHandler<V extends Validable> implements Req
         }
     }
 
-    public final Answer process(V value, Map<String, String> queryParams) {
+    public final Answer process(V value, Map<String, String> urlParams, QueryParamsMap queryParams) {
         if (value != null && !value.isValid()) {
             return new Answer(HTTP_BAD_REQUEST);
         } else {
-            return processImpl(value, queryParams);
+            return processImpl(value, urlParams, queryParams);
         }
     }
 
-    protected abstract Answer processImpl(V value, Map<String, String> queryParams);
+    protected abstract Answer processImpl(V value, Map<String, String> urlParams, QueryParamsMap queryParams);
 
 
     @Override
@@ -58,7 +58,8 @@ public abstract class AbstractRequestHandler<V extends Validable> implements Req
                 value = objectMapper.readValue(request.body(), valueClass);
             }
             Map<String, String> urlParams = request.params();
-            Answer answer = process(value, urlParams);
+            QueryParamsMap queryParams = request.queryMap();
+            Answer answer = process(value, urlParams, queryParams);
             response.status(answer.getCode());
             response.type("application/json");
             response.body(answer.getBody());

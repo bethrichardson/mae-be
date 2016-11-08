@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS journals (
     id uuid primary key,
     type text not null,
+    alexa text not null,
     value text,
     date date not null
 );
@@ -17,6 +18,7 @@ CREATE TABLE IF NOT EXISTS mood_ratings (
     facet_immoderation double PRECISION not null,
     facet_self_consciousness double PRECISION not null,
     facet_vulnerability double PRECISION not null,
+    alexa text,
     date date not null
 );
 
@@ -34,5 +36,6 @@ CREATE TABLE IF NOT EXISTS needs (
     need_self_expression double PRECISION not null,
     need_stability double PRECISION not null,
     need_structure double PRECISION not null,
+    alexa text,
     date date not null
 );

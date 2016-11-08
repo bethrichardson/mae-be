@@ -11,12 +11,14 @@ import java.util.ListIterator;
 
 public class TextAnalyzer {
     private Model model;
+    private String userId;
     public static final String JOURNAL_TYPE = "journal";
     private boolean enoughTextForAnalysis;
     private static final int MINIMUM_TEXT_CHARACTER_COUNT = 2000;
 
-    public TextAnalyzer(Model model){
+    public TextAnalyzer(Model model, String userId){
         this.model = model;
+        this.userId = userId;
     }
 
     public PersonalityScore getPersonalityScore(String baseText) {
@@ -27,15 +29,14 @@ public class TextAnalyzer {
             Profile profile = getPersonalityProfileFromWatson(textForAnalysis);
             personalityScore = buildPersonalityScore(profile);
         } else {
-            Profile profile = new Profile();
-            personalityScore = new PersonalityScore();
+            personalityScore = new PersonalityScore(userId);
         }
 
         return personalityScore;
     }
 
     private PersonalityScore buildPersonalityScore(Profile profile) {
-        PersonalityScore personalityScore = new PersonalityScore(profile);
+        PersonalityScore personalityScore = new PersonalityScore(userId, profile);
         model.createMoodRating(personalityScore.getMoodRating());
         model.createNeed(personalityScore.getNeed());
         System.out.print("PERSONALITY SCORE: " + personalityScore.toString());
@@ -58,7 +59,7 @@ public class TextAnalyzer {
 
     private String getEnoughJournalTextForWatson(String baseText) {
         String textForAnalysis = baseText;
-        List<Journal> allJournals = model.getAllJournals();
+        List<Journal> allJournals = model.getAllJournals(userId);
         enoughTextForAnalysis = true;
         Journal currentJournal;
 

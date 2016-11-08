@@ -13,6 +13,7 @@ import java.util.UUID;
 public class Journal {
     UUID id;
     String type;
+    String user;
     @Setter(AccessLevel.PACKAGE) String value;
     Date date;
 

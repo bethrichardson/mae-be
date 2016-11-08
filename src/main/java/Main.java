@@ -63,13 +63,6 @@ public class Main
 
             String databaseSetup = readFile("src/main/resources/db/schema.sql", StandardCharsets.UTF_8);
             conn.createQuery(databaseSetup).executeUpdate();
-//            conn.createQuery("CREATE TABLE IF NOT EXISTS journals (\n" +
-//                                     "    id uuid primary key,\n" +
-//                                     "    type text not null,\n" +
-//                                     "    value text,\n" +
-//                                     "    date date\n" +
-//                                     ");")
-//                    .executeUpdate();
             conn.commit();
         }
 

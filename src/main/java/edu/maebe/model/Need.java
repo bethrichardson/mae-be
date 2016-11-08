@@ -16,6 +16,8 @@ import java.util.UUID;
 public class Need {
     UUID id;
     Date date;
+    @Getter
+    String userId;
     private double need_challenge;
     private double need_closeness;
     private double need_curiosity;
@@ -28,6 +30,10 @@ public class Need {
     private double need_self_expression;
     private double need_stability;
     private double need_structure;
+
+    public Need(String userId) {
+        this.userId = userId;
+    }
 
     public void setField(String fieldName, double value) throws IllegalAccessException, NoSuchFieldException {
         Field field = Need.class.getDeclaredField(fieldName);

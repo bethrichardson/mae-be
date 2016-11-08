@@ -3,8 +3,10 @@ package edu.maebe.handlers;
 import edu.maebe.AbstractRequestHandler;
 import edu.maebe.Answer;
 import edu.maebe.model.Model;
+import spark.QueryParamsMap;
 
 import java.util.Map;
+import java.util.Set;
 
 public class JournalIndexHandler extends AbstractRequestHandler<EmptyPayload> {
 
@@ -13,9 +15,21 @@ public class JournalIndexHandler extends AbstractRequestHandler<EmptyPayload> {
     }
 
     @Override
-    protected Answer processImpl(EmptyPayload value, Map urlParams) {
-            String json = dataToJson(model.getAllJournals());
-            return Answer.ok(json);
-    } // TODO: Use query param to return journals of given type
+    protected Answer processImpl(EmptyPayload value, Map urlParams, QueryParamsMap queryParams) {
+        String userId = queryParams.value("userId");
 
+        System.out.println("USER ID: " + userId);
+        System.out.println("PARAMS: " + queryParams);
+        System.out.println("PARAMS: " + urlParams);
+        String type = queryParams.value("type");
+        String json;
+
+        if (type != null) {
+            json = dataToJson(model.getAllJournals(userId, type));
+        } else {
+            json = dataToJson(model.getAllJournals(userId));
+        }
+
+        return Answer.ok(json);
+    }
 }

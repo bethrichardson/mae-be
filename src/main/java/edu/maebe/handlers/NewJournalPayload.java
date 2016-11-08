@@ -6,8 +6,10 @@ import lombok.Data;
 class NewJournalPayload implements Validable {
     private String type;
     private String value;
+    private String userId;
 
     public boolean isValid() {
-        return type != null && !type.isEmpty() && value != null && !value.isEmpty();
+        return type != null && !type.isEmpty() && value != null && !value.isEmpty()
+                && userId != null && !userId.isEmpty();
     }
 }

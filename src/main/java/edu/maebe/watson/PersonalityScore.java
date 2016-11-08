@@ -13,18 +13,21 @@ import java.util.List;
 public class PersonalityScore {
     MoodRating moodRating;
     Need need;
+    String userId;
 
-    public PersonalityScore() {
-        this.moodRating = new MoodRating();
-        this.need = new Need();
+    public PersonalityScore(String userId) {
+        this.userId = userId;
+        this.moodRating = new MoodRating(userId);
+        this.need = new Need(userId);
     }
 
 
-    public PersonalityScore(Profile profile) {
+    public PersonalityScore(String userId, Profile profile) {
+        this.userId = userId;
         List<Trait> traitsList = profile.getPersonality();
         List<Trait> needsList = profile.getNeeds();
-        moodRating = new MoodRating();
-        need = new Need();
+        moodRating = new MoodRating(userId);
+        need = new Need(userId);
         for (Trait trait:traitsList) {
             try {
                 moodRating.setField(trait, trait.getRawScore());
