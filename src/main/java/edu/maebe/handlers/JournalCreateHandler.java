@@ -57,15 +57,16 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
         String baseText  = "You seem like you have been feeling ";
         String emotionText = "happy";
         String endText = " lately.";
+        String advice = "Take some time to enjoy the rest of your day!";
 
         if (userIdIdentified) {
-            baseText = "Watson thinks " + baseText;
             TextAnalyzer textAnalyzer = new TextAnalyzer(model, userId);
             PersonalityScore personalityScore = textAnalyzer.getPersonalityScore(textForAnalysis);
             emotionText = personalityScore.getMoodRating().getBiggestEmotion();
+            advice = personalityScore.getNeed().getAdviceForBiggestNeed();
         }
 
 
-        return baseText + emotionText + endText;
+        return baseText + emotionText + endText + " " + advice;
     }
 }

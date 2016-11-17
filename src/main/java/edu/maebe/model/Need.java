@@ -18,18 +18,36 @@ public class Need {
     Date date;
     @Getter
     String userId;
-    private double need_challenge;
-    private double need_closeness;
-    private double need_curiosity;
-    private double need_excitement;
-    private double need_harmony;
-    private double need_ideal;
-    private double need_liberty;
-    private double need_love;
-    private double need_practicality;
-    private double need_self_expression;
-    private double need_stability;
-    private double need_structure;
+    @Getter
+    public double need_challenge;
+    @Getter
+    public double need_closeness;
+    @Getter
+    public double need_curiosity;
+    @Getter
+    public double need_excitement;
+    @Getter
+    public double need_harmony;
+    @Getter
+    public double need_ideal;
+    @Getter
+    public double need_liberty;
+    @Getter
+    public double need_love;
+    @Getter
+    public double need_practicality;
+    @Getter
+    public double need_self_expression;
+    @Getter
+    public double need_stability;
+    @Getter
+    public double need_structure;
+
+    private String[] needs = { "need_challenge", "need_closeness", "need_curiosity", "need_excitement",
+          "need_harmony", "need_ideal", "need_liberty", "need_love", "need_practicality", "need_self_expression",
+            "need_stability", "need_structure"
+
+    };
 
     public Need(String userId) {
         this.userId = userId;
@@ -39,5 +57,33 @@ public class Need {
         Field field = Need.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(this, value);
+    }
+
+    public String getAdviceForNeed(String needName) {
+        String[] advice = Advice.adviceMap.get(needName);
+        int random = (int)(Math.random() * advice.length);
+        return advice[random];
+    }
+
+    public String getAdviceForBiggestNeed() {
+        double biggestNeedValue = 0.0;
+        String biggestNeed = "";
+        String[] fields = this.needs;
+        for (String field : fields) {
+            double currentFieldValue = 0;
+            try {
+                Field fieldProperty = Need.class.getField(field);
+                fieldProperty.setAccessible(true);
+                currentFieldValue = (double) fieldProperty.get(this);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            if (currentFieldValue > biggestNeedValue) {
+                biggestNeedValue = currentFieldValue;
+                biggestNeed = getAdviceForNeed(field);
+            }
+        }
+
+        return biggestNeed;
     }
 }
