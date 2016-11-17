@@ -121,7 +121,7 @@ public class MoodRating {
                 childFieldName = facet.getTraitId();
                 field = MoodRating.EmotionalRange.class.getDeclaredField(childFieldName);
                 field.setAccessible(true);
-                field.set(this.emotionalRange, value);
+                field.set(this.emotionalRange, facet.getRawScore());
 
             }
 
