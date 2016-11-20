@@ -25,7 +25,7 @@ public class Advice {
 
     private static String[] need_curiosity = {
             "Why don't you try learning a new language?",
-            "What's something you would like to learn more about? There are lots of free online courses that can teach you new things you haven;t tried before.",
+            "What's something you would like to learn more about? There are lots of free online courses that can teach you new things you have not tried before.",
             "Where is your family originally from? Maybe you should see if you can find anything out from a family member or online.",
             "What is your favorite work of art? Do you know who painted it and where it is? Go do some research and find out."
     };

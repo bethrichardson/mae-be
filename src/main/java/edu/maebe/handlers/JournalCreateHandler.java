@@ -43,7 +43,7 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
             if (value.getType().equals(Journal.JOURNAL_TYPE_DIAPER)) {
                 metricValue = metricAnalyzer.getValue();
             } else {
-                metricValue = Integer.toString(metricAnalyzer.getValueInDigits());
+                metricValue = Double.toString(metricAnalyzer.getValueInDigits());
             }
 
             model.createJournal(value.getType(), metricValue, userId);
