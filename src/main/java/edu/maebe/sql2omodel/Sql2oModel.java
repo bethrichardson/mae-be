@@ -22,7 +22,7 @@ public class Sql2oModel implements Model {
 
     //journals
     @Override
-    public UUID createJournal(String type, String value, String user) {
+    public UUID createJournal(String type, String value, String user, String source) {
         try (Connection conn = sql2o.beginTransaction()) {
             UUID journalUuid = uuidGenerator.generate();
             conn.createQuery("insert into journals(id, type, value, alexa, date) VALUES (:id, :type, :value, :alexa, :date)")
@@ -31,6 +31,7 @@ public class Sql2oModel implements Model {
                     .addParameter("value", value)
                     .addParameter("alexa", user)
                     .addParameter("date", new Date())
+                    .addParameter("source", source)
                     .executeUpdate();
             conn.commit();
             return journalUuid;
