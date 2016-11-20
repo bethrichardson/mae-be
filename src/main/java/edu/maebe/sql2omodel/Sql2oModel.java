@@ -87,8 +87,6 @@ public class Sql2oModel implements Model {
     {
         try (Connection conn = sql2o.beginTransaction()) {
             UUID MoodRatingUuid = uuidGenerator.generate();
-            MoodRating.EmotionalRange emotionalRange = moodRating.getEmotionalRange();
-            MoodRating.Personality personality = moodRating.getPersonality();
             conn.createQuery("insert into mood_ratings(id, big5_agreeableness, big5_conscientiousness, " +
                                      "big5_extraversion, big5_openness, facet_anger, " +
                                      "facet_anxiety, facet_depression, facet_immoderation, " +
@@ -98,16 +96,16 @@ public class Sql2oModel implements Model {
                                      ":facet_anxiety, :facet_depression, :facet_immoderation, " +
                                      ":facet_self_consciousness, :facet_vulnerability, :alexa, :date)")
                     .addParameter("id", MoodRatingUuid)
-                    .addParameter("big5_agreeableness", personality.getBig5_agreeableness())
-                    .addParameter("big5_conscientiousness", personality.getBig5_conscientiousness())
-                    .addParameter("big5_extraversion", personality.getBig5_extraversion())
-                    .addParameter("big5_openness", personality.getBig5_openness())
-                    .addParameter("facet_anger", emotionalRange.getFacet_anger())
-                    .addParameter("facet_anxiety", emotionalRange.getFacet_anxiety())
-                    .addParameter("facet_depression", emotionalRange.getFacet_depression())
-                    .addParameter("facet_immoderation", emotionalRange.getFacet_immoderation())
-                    .addParameter("facet_self_consciousness", emotionalRange.getFacet_self_consciousness())
-                    .addParameter("facet_vulnerability", emotionalRange.getFacet_vulnerability())
+                    .addParameter("big5_agreeableness", moodRating.getBig5_agreeableness())
+                    .addParameter("big5_conscientiousness", moodRating.getBig5_conscientiousness())
+                    .addParameter("big5_extraversion", moodRating.getBig5_extraversion())
+                    .addParameter("big5_openness", moodRating.getBig5_openness())
+                    .addParameter("facet_anger", moodRating.getFacet_anger())
+                    .addParameter("facet_anxiety", moodRating.getFacet_anxiety())
+                    .addParameter("facet_depression", moodRating.getFacet_depression())
+                    .addParameter("facet_immoderation", moodRating.getFacet_immoderation())
+                    .addParameter("facet_self_consciousness", moodRating.getFacet_self_consciousness())
+                    .addParameter("facet_vulnerability", moodRating.getFacet_vulnerability())
                     .addParameter("alexa", moodRating.getUserId())
                     .addParameter("date", new Date())
                     .executeUpdate();
@@ -120,16 +118,6 @@ public class Sql2oModel implements Model {
     public List<MoodRating> getAllMoodRatings(String user) {
         try (Connection conn = sql2o.open()) {
             List<MoodRating> MoodRatings = conn.createQuery("select * from mood_ratings where alexa = " + "'" + user + "'")
-                    .addColumnMapping("big5_agreeableness", "personality.big5_agreeableness")
-                    .addColumnMapping("big5_conscientiousness", "personality.big5_conscientiousness")
-                    .addColumnMapping("big5_extraversion", "personality.big5_extraversion")
-                    .addColumnMapping("big5_openness", "personality.big5_openness")
-                    .addColumnMapping("facet_anger", "emotionalRange.facet_anger")
-                    .addColumnMapping("facet_anxiety", "emotionalRange.facet_anxiety")
-                    .addColumnMapping("facet_depression", "emotionalRange.facet_depression")
-                    .addColumnMapping("facet_immoderation", "emotionalRange.facet_immoderation")
-                    .addColumnMapping("facet_self_consciousness", "emotionalRange.facet_self_consciousness")
-                    .addColumnMapping("facet_vulnerability", "emotionalRange.facet_vulnerability")
                     .addColumnMapping("alexa", "userId")
                     .executeAndFetch(MoodRating.class);
             return MoodRatings;

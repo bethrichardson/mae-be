@@ -4,13 +4,15 @@ import edu.maebe.AbstractRequestHandler;
 import edu.maebe.Answer;
 import edu.maebe.model.Journal;
 import edu.maebe.model.Model;
+import edu.maebe.model.MoodRating;
+import edu.maebe.model.User;
 import edu.maebe.watson.MetricAnalyzer;
 import edu.maebe.watson.PersonalityScore;
 import edu.maebe.watson.TextAnalyzer;
 import spark.QueryParamsMap;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPayload> {
 
@@ -62,7 +64,11 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
         if (userIdIdentified) {
             TextAnalyzer textAnalyzer = new TextAnalyzer(model, userId);
             PersonalityScore personalityScore = textAnalyzer.getPersonalityScore(textForAnalysis);
-            emotionText = personalityScore.getMoodRating().getBiggestEmotion();
+
+            List<MoodRating> moodRatingsForUser = model.getAllMoodRatings(userId);
+            User user = new User(moodRatingsForUser, userId);
+
+            emotionText = personalityScore.getMoodRating().getBiggestEmotionOutsideNormal(user);
             advice = personalityScore.getNeed().getAdviceForBiggestNeed();
         }
 

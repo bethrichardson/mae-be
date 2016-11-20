@@ -13,6 +13,8 @@ public class Advice {
             "Have you ever tried mountain biking? Maybe you should get a bike and try it.",
             "Would you be up for trying a new sport? Maybe there is an amateur soccer league nearby."
     };
+    private static String challenge = "You seem like you could use a new challenge.";
+
 
     private static String[] need_closeness = {
             "You could use a hug from a close friend.",
@@ -23,7 +25,7 @@ public class Advice {
 
     private static String[] need_curiosity = {
             "Why don't you try learning a new language?",
-            "Do you know how to program? There are lots of free online courses that can teach you how.",
+            "What's something you would like to learn more about? There are lots of free online courses that can teach you new things you haven;t tried before.",
             "Where is your family originally from? Maybe you should see if you can find anything out from a family member or online.",
             "What is your favorite work of art? Do you know who painted it and where it is? Go do some research and find out."
     };

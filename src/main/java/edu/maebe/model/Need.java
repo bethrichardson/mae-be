@@ -1,5 +1,6 @@
 package edu.maebe.model;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import lombok.ToString;
 
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 @ToString(includeFieldNames=true)
@@ -49,6 +51,9 @@ public class Need {
 
     };
 
+//    private static String need_challenge = "You seem like you could use a new challenge.";
+
+
     public Need(String userId) {
         this.userId = userId;
     }
@@ -62,8 +67,24 @@ public class Need {
     public String getAdviceForNeed(String needName) {
         String[] advice = Advice.adviceMap.get(needName);
         int random = (int)(Math.random() * advice.length);
-        return advice[random];
+        String needDescription = needMap.get(needName);
+        return needDescription + advice[random];
     }
+
+    public static Map<String, String> needMap = ImmutableMap.<String, String>builder()
+            .put("need_challenge", "You seem like you could use a new challenge. ")
+            .put("need_closeness", "You seem like you need to feel more connected to your family and getting your home in order. ")
+            .put("need_curiosity", "Do you feel like you have a desire to discover new things? ")
+            .put("need_excitement", "Have you been wanting to get out there and live life and just have some fun? ")
+            .put("need_harmony", "You seem like you have a need to appreciate other people, their viewpoints, and their feelings. ")
+            .put("need_ideal", "Have you been feeling a desire for perfection and a sense of community? ")
+            .put("need_liberty", "You seem like you could use an escape. ")
+            .put("need_love", "You might need a little extra love right now. ")
+            .put("need_practicality", "You seem like you could benefit from getting a job done right now. ")
+            .put("need_self_expression", "You seem like you would enjoy discovering and asserting your identity right now. ")
+            .put("need_stability", "Right now it seems like you could use some stability. ")
+            .put("need_structure", "You could use some structure in your life. ")
+            .build();
 
     public String getAdviceForBiggestNeed() {
         double biggestNeedValue = 0.0;
