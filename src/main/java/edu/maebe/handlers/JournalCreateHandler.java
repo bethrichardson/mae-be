@@ -30,7 +30,6 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
         boolean userIdIdentified = userId.equals(System.getenv("ALEXA_USERID"));
 
         if (value.getType().equals(Journal.JOURNAL_TYPE_TEXT)) {
-
             String textResponse = getTextResponseForJournal(value, userId, textForAnalysis, userIdIdentified);
 
             return new Answer(200, textResponse);
@@ -72,7 +71,10 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
             advice = personalityScore.getNeed().getAdviceForBiggestNeed();
         }
 
-
-        return baseText + emotionText + endText + " " + advice;
+        if (!value.isAdvice()) {
+            return "I have recorded a new journal. Thank you.";
+        } else {
+            return baseText + emotionText + endText + " " + advice;
+        }
     }
 }
