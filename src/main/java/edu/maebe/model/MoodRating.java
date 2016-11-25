@@ -7,7 +7,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -92,6 +91,7 @@ public class MoodRating {
 
     private EmotionalRangeElevated getValuesOutsideBaseline(User user) {
         EmotionalRangeElevated emotionalRangeElevated = new EmotionalRangeElevated();
+        System.out.println("_________________VALUES_________________");
         emotionalRangeElevated.facet_anger = user.getFacet_anger().outsideNormalValue(this.getFacet_anger());
         emotionalRangeElevated.facet_anxiety = user.getFacet_anxiety().outsideNormalValue(this.getFacet_anxiety()) ;
         emotionalRangeElevated.facet_depression = user.getFacet_depression().outsideNormalValue(this.getFacet_depression());
@@ -137,6 +137,15 @@ public class MoodRating {
         }
 
         return biggestEmotionOutsideNorm;
+    }
+
+    public boolean getRequiresMedicalAdvice(User user) {
+        return user.getFacet_anger().stronglyOutsideNormalValue(this.getFacet_anger()) ||
+                user.getFacet_anxiety().stronglyOutsideNormalValue(this.getFacet_anxiety()) ||
+                user.getFacet_depression().stronglyOutsideNormalValue(this.getFacet_depression()) ||
+                user.getFacet_immoderation().stronglyOutsideNormalValue(this.getFacet_immoderation()) ||
+                user.getFacet_self_consciousness().stronglyOutsideNormalValue(this.getFacet_self_consciousness()) ||
+                user.getFacet_vulnerability().stronglyOutsideNormalValue(this.getFacet_vulnerability());
     }
 
     public void setField(Trait trait, double value) throws IllegalAccessException, NoSuchFieldException {
