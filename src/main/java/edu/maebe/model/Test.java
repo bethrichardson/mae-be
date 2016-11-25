@@ -16,10 +16,16 @@ public class Test {
 
     public Test (String testName) {
         buildTestSet();
-        this.profile = tests.get(testName);
+
+        this.profile = tests.get(getLastWordInTestName(testName));
+        System.out.println("Testing with " + getLastWordInTestName(testName));
         if (profile == null) {
             this.profile = tests.get("normal");
         }
+    }
+
+    private String getLastWordInTestName(String testName) {
+        return testName.substring(testName.lastIndexOf(" ")+1);
     }
 
     private void buildTestSet() {
