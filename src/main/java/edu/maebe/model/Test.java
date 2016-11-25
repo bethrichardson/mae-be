@@ -17,6 +17,9 @@ public class Test {
     public Test (String testName) {
         buildTestSet();
         this.profile = tests.get(testName);
+        if (profile == null) {
+            this.profile = tests.get("normal");
+        }
     }
 
     private void buildTestSet() {
