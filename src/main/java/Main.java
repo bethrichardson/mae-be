@@ -1,4 +1,6 @@
 import com.beust.jcommander.JCommander;
+import edu.maebe.handlers.FriendCreateHandler;
+import edu.maebe.handlers.FriendIndexHandler;
 import edu.maebe.handlers.JournalCreateHandler;
 import edu.maebe.handlers.JournalIndexHandler;
 import edu.maebe.handlers.ReportIndexHandler;
@@ -77,13 +79,19 @@ public class Main
         freeMarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(Main.class, "/"));
         freeMarkerEngine.setConfiguration(freeMarkerConfiguration);
 
-        // insert a post (using HTTP post method)
+        // insert a journal (using HTTP post method)
         post("/journals", new JournalCreateHandler(model));
 
-        // get all post (using HTTP get method)
+        // get all journals (using HTTP get method)
         get("/journals", new JournalIndexHandler(model));
 
-        // get all post (using HTTP get method)
+        // get all mood ratings (using HTTP get method)
         get("/report", new ReportIndexHandler(model));
+
+        // insert a friend (using HTTP post method)
+        post("/friends", new FriendCreateHandler(model));
+
+        // get all friends (using HTTP get method)
+        get("/friends", new FriendIndexHandler(model));
     }
 }

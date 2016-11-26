@@ -6,6 +6,17 @@ CREATE TABLE IF NOT EXISTS journals (
     date date not null
 );
 
+CREATE TABLE IF NOT EXISTS friends (
+    id uuid primary key,
+    name text not null,
+    nickname text,
+    phone text,
+    email text,
+    userid text not null,
+    type text not null,
+    date date not null
+);
+
 CREATE TABLE IF NOT EXISTS mood_ratings (
     id uuid primary key,
     big5_agreeableness double PRECISION not null,

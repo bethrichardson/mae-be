@@ -19,4 +19,10 @@ public interface Model {
     UUID createNeed(Need need);
     List<Need> getAllNeeds(String user);
     boolean existNeed(UUID need);
+
+    //Need
+    UUID createFriend(Friend friend, String user);
+    List<Friend> getAllFriends(String user);
+    List<Friend> getAllFriends(String type, String user);
+    boolean existFriend(UUID friend);
 }
