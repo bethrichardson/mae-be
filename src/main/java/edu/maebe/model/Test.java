@@ -33,8 +33,8 @@ public class Test {
         tests.put("anger", createProfile(angryPersonality, challengeNeed));
         tests.put("anxiety", createProfile(anxiousPersonality, closenessNeed));
         tests.put("depression", createProfile(depressedPersonality, curiosityNeed));
-        tests.put("immoderate", createProfile(immoderatePersonality, excitementNeed));
-        tests.put("self-conscious", createProfile(selfconsciousPersonality, harmonyNeed));
+        tests.put("excessive", createProfile(immoderatePersonality, excitementNeed));
+        tests.put("embarrassed", createProfile(selfconsciousPersonality, harmonyNeed));
         tests.put("vulnerable", createProfile(vulnerablePersonality, idealNeed));
         tests.put("normal", createProfile(normalPersonality, libertyNeed));
         tests.put("help", createProfile(needsHelpPersonality, libertyNeed));
