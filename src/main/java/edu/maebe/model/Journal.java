@@ -23,7 +23,8 @@ public class Journal {
     public static final String JOURNAL_TYPE_WEIGHT = "weight";
     public static final String JOURNAL_TYPE_SLEEP = "sleep";
     public static final String JOURNAL_TYPE_DIAPER = "diaper";
-
+    public static final String JOURNAL_TYPE_TEST = "test";
+    
     public static final String JOURNAL_SOURCE_WEB = "web";
     public static final String JOURNAL_SOURCE_ALEXA = "alexa";
 }

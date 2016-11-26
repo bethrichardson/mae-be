@@ -21,6 +21,10 @@ public class TextAnalyzer {
         this.userId = userId;
     }
 
+    public TextAnalyzer(String userId){
+        this.userId = userId;
+    }
+
     public PersonalityScore getPersonalityScore(String baseText) {
         String textForAnalysis = getEnoughJournalTextForWatson(baseText);
         PersonalityScore personalityScore;
@@ -35,10 +39,17 @@ public class TextAnalyzer {
         return personalityScore;
     }
 
-    private PersonalityScore buildPersonalityScore(Profile profile) {
+    public PersonalityScore buildPersonalityScore(Profile profile) {
         PersonalityScore personalityScore = new PersonalityScore(userId, profile);
         model.createMoodRating(personalityScore.getMoodRating());
         model.createNeed(personalityScore.getNeed());
+        System.out.print("PERSONALITY SCORE: " + personalityScore.toString());
+
+        return personalityScore;
+    }
+
+    public PersonalityScore buildTestPersonalityScore(Profile profile) {
+        PersonalityScore personalityScore = new PersonalityScore(userId, profile);
         System.out.print("PERSONALITY SCORE: " + personalityScore.toString());
 
         return personalityScore;

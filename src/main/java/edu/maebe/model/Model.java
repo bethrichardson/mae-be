@@ -21,6 +21,12 @@ public interface Model {
     List<Need> getAllNeeds(String user);
     boolean existNeed(UUID need);
 
+    //Need
+    UUID createFriend(Friend friend, String user);
+    List<Friend> getAllFriends(String user);
+    List<Friend> getAllFriends(String type, String user);
+    boolean existFriend(UUID friend);
+    
     //UserSetting
     UUID createUserSettings(String user, Boolean readFeedbackImmediately, String emailAddress, String phoneNumber,
             int numberOfChildren, String cellProvider, Date lastUpdate);

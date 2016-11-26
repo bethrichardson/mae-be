@@ -58,12 +58,12 @@ public class User {
                 index++;
             }
 
-            this.facet_anger = new Baseline(angerValues);
-            this.facet_anxiety = new Baseline(anxietyValues);
-            this.facet_depression = new Baseline(depressionValues);
-            this.facet_immoderation = new Baseline(immoderationValues);
-            this.facet_self_consciousness = new Baseline(selfConsciousnessValues);
-            this.facet_vulnerability = new Baseline(vulnerabilityValues);
+            this.facet_anger = new Baseline(angerValues, "anger");
+            this.facet_anxiety = new Baseline(anxietyValues, "anxiety");
+            this.facet_depression = new Baseline(depressionValues, "depression");
+            this.facet_immoderation = new Baseline(immoderationValues, "immoderation");
+            this.facet_self_consciousness = new Baseline(selfConsciousnessValues, "self-consciousness");
+            this.facet_vulnerability = new Baseline(vulnerabilityValues, "vulnerability");
 
         }
     }
@@ -83,17 +83,47 @@ public class User {
     @Getter
     public class Baseline {
         @Getter
+        private String valueType;
+        @Getter
         private double value;
         @Getter
         private double standardDeviation;
 
-        private Baseline (ArrayList<Double> values) {
+        private double standardDeviationBoundary() {
+            return this.getValue() + this.getStandardDeviation();
+        }
+
+        private double doubleStandardDeviationBoundary() {
+            return this.getValue() + ( 2 * this.getStandardDeviation() );
+        }
+
+        public void logString(double valueToCompare, boolean nonNormal, boolean stronglyNonNormal) {
+
+            System.out.println(String.format("%s=%s; stdv=%s; " +
+                    "boundary=%s; extreme=%s. " +
+                    "|| current=%s; non-normal=%s; strongly-non-normal=%s", valueType, value, standardDeviation,
+                    Double.toString(standardDeviationBoundary()), Double.toString(doubleStandardDeviationBoundary()),
+                    valueToCompare,
+                    Boolean.toString(nonNormal), Boolean.toString(stronglyNonNormal)
+            ));
+        }
+
+        private Baseline (ArrayList<Double> values, String name) {
             this.value = mean(values);
             this.standardDeviation = getStandardDeviation(values);
+            this.valueType = name;
         }
 
         public boolean outsideNormalValue (double valueToCompare) {
-            return valueToCompare > this.getValue() + this.getStandardDeviation();
+            boolean outsideNormal = valueToCompare > this.standardDeviationBoundary();
+            boolean stronglyOutsideNormal = stronglyOutsideNormalValue(valueToCompare);
+            this.logString(valueToCompare, outsideNormal, stronglyOutsideNormal);
+
+            return outsideNormal;
+        }
+
+        public boolean stronglyOutsideNormalValue (double valueToCompare) {
+            return valueToCompare > this.doubleStandardDeviationBoundary();
         }
 
         private double getStandardDeviation (ArrayList<Double> values)

@@ -20,20 +20,20 @@ function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
     return {
         outputSpeech: {
             type: 'PlainText',
-            text: output,
+            text: output
         },
         card: {
             type: 'Simple',
             title: `SessionSpeechlet - ${title}`,
-            content: `SessionSpeechlet - ${output}`,
+            content: `SessionSpeechlet - ${output}`
         },
         reprompt: {
             outputSpeech: {
                 type: 'PlainText',
-                text: repromptText,
-            },
+                text: repromptText
+            }
         },
-        shouldEndSession,
+        shouldEndSession
     };
 }
 
@@ -53,7 +53,7 @@ function getWelcomeResponse(callback) {
     const sessionAttributes = {};
     const cardTitle = 'Welcome';
     const speechOutput = 'Welcome to Mae. ' +
-        'Would you like to record a new journal entry?';
+        'What do you want to record today?';
     // If the user either does not reply to the welcome message or says something that is not
     // understood, they will be prompted again with this text.
     const repromptText = 'Please record a new journal entry by speaking it outloud';
@@ -74,7 +74,7 @@ function handleSessionEndRequest(callback) {
 
 function createJournalAttributes(journal) {
     return {
-        journal,
+        journal
     };
 }
 
@@ -89,6 +89,7 @@ function setJournalInSession(intent, session, callback) {
     const shouldEndSession = false;
     let speechOutput = '';
     let requestType = "journal";
+    let advice = true;
 
     if (intentName === 'MyHeightIsIntent') {
         requestType = "height";
@@ -98,6 +99,11 @@ function setJournalInSession(intent, session, callback) {
         requestType = "sleep";
     } else if (intentName === 'MyDiaperIsIntent') {
         requestType = "diaper";
+    } else if (intentName === 'MyTestIsIntent') {
+        requestType = "test";
+    } else if (intentName === 'MyJournalNoAdviceIntent') {
+        requestType = "journal";
+        advice = false;
     }
 
     var endpoint = 'mae-be.herokuapp.com';
@@ -105,7 +111,8 @@ function setJournalInSession(intent, session, callback) {
         var data = {
             type: requestType,
             value: journalSlot.value,
-            userId: session.user.userId
+            userId: session.user.userId,
+            advice
         };
 
         var options = {
@@ -132,13 +139,13 @@ function setJournalInSession(intent, session, callback) {
             res.on('end', function () {
                 console.log('Maebe Response: ' + responseString);
                 journalSlot.value = responseString;
-                finishWithJournal(journalSlot)
+                finishWithJournal(journalSlot, false)
             });
 
             // Handler for HTTP request errors.
             req.on('error', function (e) {
                 console.error('HTTP error: ' + e.message);
-                finishWithJournal(journalSlot)
+                finishWithJournal("Mae encountered an error when recording your journal.", false)
             });
         });
 
@@ -157,34 +164,12 @@ function setJournalInSession(intent, session, callback) {
         const journal = journalSlot.value;
         sessionAttributes = createJournalAttributes(journal);
         speechOutput = `${journal}`;
-        repromptText = "You can ask me your journal entry by saying, what's my journal entry?";
+        repromptText = "You can ask me your current advice by saying, what's my advice?";
 
         callback(sessionAttributes,
-            buildSpeechletResponse(intentName, speechOutput, repromptText, shouldEndSession));
+            buildSpeechletResponse(intentName, speechOutput, repromptText, true));
 
     }
-
-    // http.get(endpoint, data, function (res) {
-    //     console.log('Status Code: ' + res.statusCode);
-    //
-    //     res.on('data', function (data) {
-    //         journalResponseString += data;
-    //     });
-    //
-    //     res.on('end', function () {
-    //         var speechResponseObject = JSON.parse(journalResponseString);
-    //
-    //         if (speechResponseObject.error) {
-    //             console.log("Mae error: " + speechResponseObject.error.message);
-    //         } else {
-    //             journalResponseString = speechResponseObject;
-    //         }
-    //     });
-    // }).on('error', function (e) {
-    //     console.log("Communications error: " + e.message);
-    // });
-
-
 }
 
 function getJournalFromSession(intent, session, callback) {
@@ -243,9 +228,10 @@ function onIntent(intentRequest, session, callback) {
 
     // Dispatch to your skill's intent handlers
     if (intentName === 'MyJournalIsIntent' || intentName === 'MyWeightIsIntent' || intentName === 'MySleepIsIntent'
-        || intentName === 'MyHeightIsIntent' || intentName === 'MyDiaperIsIntent') {
+        || intentName === 'MyHeightIsIntent' || intentName === 'MyDiaperIsIntent' || intentName === 'MyJournalNoAdviceIntent'
+        || intentName === 'MyTestIsIntent') {
         setJournalInSession(intent, session, callback);
-    } else if (intentName === 'WhatsMyJournalIntent') {
+    } else if (intentName === 'WhatsMyAdviceIntent') {
         getJournalFromSession(intent, session, callback);
     } else if (intentName === 'AMAZON.HelpIntent') {
         getWelcomeResponse(callback);

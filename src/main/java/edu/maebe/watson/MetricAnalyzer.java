@@ -10,21 +10,17 @@ public class MetricAnalyzer {
     String type;
 
     public MetricAnalyzer(String type, String value) {
-        this.value = getRidOfUnits(value);
+        this.value = type.equals(Journal.JOURNAL_TYPE_DIAPER) ? value : getRidOfUnits(value);
         this.type = type;
     }
 
-    public int getValueInDigits(){
-        return Integer.parseInt(this.value);
+    public double getValueInDigits(){
+        return Double.valueOf(this.value);
     }
 
     private String getRidOfUnits(String value) {
         String valueWithNoUnits = value;
-        valueWithNoUnits = valueWithNoUnits.replace(" hours","");
-        valueWithNoUnits = valueWithNoUnits.replace(" pounds","");
-        valueWithNoUnits = valueWithNoUnits.replace(" inches","");
-        valueWithNoUnits = valueWithNoUnits.replace(" lbs","");
-        valueWithNoUnits = valueWithNoUnits.replace("\"","");
+        valueWithNoUnits = valueWithNoUnits.replaceAll("[^\\d.]", "");
         return valueWithNoUnits;
     }
 
@@ -32,13 +28,13 @@ public class MetricAnalyzer {
         String textResponse = "";
         switch (type){
             case Journal.JOURNAL_TYPE_HEIGHT:
-                textResponse = "Your baby is getting so big! I recorded a new height of " + value + " inches.";
+                textResponse = "I recorded a new height of " + value + " inches.";
                 break;
             case Journal.JOURNAL_TYPE_WEIGHT:
-                textResponse = "Your baby is getting so big! I recorded a new weight of " + value + " pounds.";
+                textResponse = "I recorded a new weight of " + value + " pounds.";
                 break;
             case Journal.JOURNAL_TYPE_SLEEP:
-                textResponse = "Rock a bye baby. I recorded a new sleep time of " + value + " hours.";
+                textResponse = "I recorded a new sleep time of " + value + " hours.";
                 break;
             case Journal.JOURNAL_TYPE_DIAPER:
                 textResponse = "I recorded a new diaper containing " + value + ".";

@@ -237,4 +237,61 @@ public class Sql2oModel implements Model {
             return settings.size() > 0;
         }
     }
+
+    @Override
+    public UUID createFriend(Friend friend, String user) {
+        try (Connection conn = sql2o.beginTransaction()) {
+            UUID friendUuid = uuidGenerator.generate();
+            conn.createQuery("insert into friends(id, name, nickname, phone, email, userid, type, date) VALUES " +
+                                     "(:id, :name, :nickname, :phone, :email, :userid, :type, :date)")
+                    .addParameter("id", friendUuid)
+                    .addParameter("name", friend.getName())
+                    .addParameter("nickname", friend.getNickname())
+                    .addParameter("phone", friend.getPhone())
+                    .addParameter("email", friend.getEmail())
+                    .addParameter("userid", friend.getUserId())
+                    .addParameter("type", friend.getType())
+                    .addParameter("date", new Date())
+                    .executeUpdate();
+            conn.commit();
+            return friendUuid;
+        }
+    }
+
+    @Override
+    public List<Friend> getAllFriends(String user) {
+        try (Connection conn = sql2o.open()) {
+            List<Friend> friends = conn.createQuery("select * from friends where userid = " + "'" + user + "'")
+                    .addColumnMapping("userid", "userId")
+                    .executeAndFetch(Friend.class);
+            return friends;
+        }
+    }
+
+    @Override
+    public List<Friend> getAllFriends(String type, String user) {
+        String query;
+        if (user == null) {
+            query = "select * from friends where userid is null and type = '" + type + "'";
+        } else {
+            query = "select * from friends where userid = '" + user + "'and type = '" + type + "'";
+        }
+
+        try (Connection conn = sql2o.open()) {
+            List<Friend> friends = conn.createQuery(query)
+                    .addColumnMapping("userid", "userId")
+                    .executeAndFetch(Friend.class);
+            return friends;
+        }
+    }
+
+    @Override
+    public boolean existFriend(UUID friend) {
+        try (Connection conn = sql2o.open()) {
+            List<Friend> friends = conn.createQuery("select * from friends where id=:friend")
+                    .addParameter("friend", friend)
+                    .executeAndFetch(Friend.class);
+            return friends.size() > 0;
+        }
+    }
 }
