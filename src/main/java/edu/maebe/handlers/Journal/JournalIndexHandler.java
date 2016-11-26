@@ -7,7 +7,7 @@ import edu.maebe.model.Model;
 import spark.QueryParamsMap;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 
 public class JournalIndexHandler extends AbstractRequestHandler<EmptyPayload> {
 
@@ -16,17 +16,17 @@ public class JournalIndexHandler extends AbstractRequestHandler<EmptyPayload> {
     }
 
     @Override
-    protected Answer processImpl(EmptyPayload value, Map urlParams, QueryParamsMap queryParams) {
-        String userId = queryParams.value("userId");
-        String type = queryParams.value("type");
+    protected Answer processImpl(EmptyPayload value, Map<String, String> urlParams, QueryParamsMap queryParams) {
+        UUID journalId = UUID.fromString(urlParams.get(":uuid"));
         String json;
 
-        if (type != null) {
-            json = dataToJson(model.getAllJournals(userId, type));
+        if (model.existJournal(journalId)) {
+            json = dataToJson(model.getJournal(journalId));
+
         } else {
-            json = dataToJson(model.getAllJournals(userId));
+            return new Answer(400);
         }
 
-        return Answer.ok(json);
+        return new Answer(200, json);
     }
 }

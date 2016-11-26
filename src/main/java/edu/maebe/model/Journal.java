@@ -18,6 +18,13 @@ public class Journal {
     Date date;
     String source;
 
+    public Journal (String type, String user, String value, String source) {
+        this.type = type;
+        this.user = user;
+        this.value = value;
+        this.source = source;
+    }
+
     public static final String JOURNAL_TYPE_TEXT = "journal";
     public static final String JOURNAL_TYPE_HEIGHT = "height";
     public static final String JOURNAL_TYPE_WEIGHT = "weight";

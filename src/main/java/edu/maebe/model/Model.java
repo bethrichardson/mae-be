@@ -7,8 +7,11 @@ import java.util.Date;
 public interface Model {
     //Journal
     UUID createJournal(String type, String value, String user, String source);
+    UUID editJournal(String type, String value, UUID journal, String source);
     List<Journal> getAllJournals(String user);
     List<Journal> getAllJournals(String type, String user);
+    Journal getJournal(UUID journal);
+    Journal getLastJournalForUser(String userId);
     boolean existJournal(UUID journal);
 
     //MoodRating
@@ -29,7 +32,7 @@ public interface Model {
     
     //UserSetting
     UUID createUserSettings(String userId, Boolean immediateFeedback, String email, String phone,
-            int numberOfChildren, String provider, Date lastUpdate);
+            int numberOfChildren, String provider, String first, String last, Date lastUpdate);
     UserSettings getUserSettings(String user);
     boolean existsUserSettings(String userSettings);
 }

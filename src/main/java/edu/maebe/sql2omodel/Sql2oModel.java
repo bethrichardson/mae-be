@@ -39,6 +39,23 @@ public class Sql2oModel implements Model {
     }
 
     @Override
+    public UUID editJournal(String type, String value, UUID journal, String source) {
+        try (Connection conn = sql2o.beginTransaction()) {
+
+                conn.createQuery("update journals set type = :type, " +
+                                         "value=:value, source=:source where id = :journalId")
+                        .addParameter("journalId", journal)
+                        .addParameter("type", type)
+                        .addParameter("value", value)
+                        .addParameter("source", source)
+                        .executeUpdate();
+
+            conn.commit();
+            return journal;
+        }
+    }
+
+    @Override
     public List<Journal> getAllJournals(String user) {
         String query;
         if (user == null) {
@@ -73,10 +90,37 @@ public class Sql2oModel implements Model {
     }
 
     @Override
+    public Journal getJournal(UUID journal) {
+        String query = "select * from journals where id =:journal";
+
+        try (Connection conn = sql2o.open()) {
+            List<Journal> journals = conn.createQuery(query)
+                    .addParameter("journal", journal)
+                    .addColumnMapping("alexa", "user")
+                    .executeAndFetch(Journal.class);
+            return journals.get(0);
+        }
+    }
+
+    @Override
+    public Journal getLastJournalForUser(String userid) {
+        String query = "select * from journals where alexa =:userid order by date DESC";
+
+        try (Connection conn = sql2o.open()) {
+            List<Journal> journals = conn.createQuery(query)
+                    .addParameter("userid", userid)
+                    .addColumnMapping("alexa", "user")
+                    .executeAndFetch(Journal.class);
+            return journals.get(0);
+        }
+    }
+
+    @Override
     public boolean existJournal(UUID journal) {
         try (Connection conn = sql2o.open()) {
             List<Journal> journals = conn.createQuery("select * from journals where id=:journal")
                     .addParameter("journal", journal)
+                    .addColumnMapping("alexa", "user")
                     .executeAndFetch(Journal.class);
             return journals.size() > 0;
         }
