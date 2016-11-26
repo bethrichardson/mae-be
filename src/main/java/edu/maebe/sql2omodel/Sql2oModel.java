@@ -25,7 +25,7 @@ public class Sql2oModel implements Model {
     public UUID createJournal(String type, String value, String user, String source) {
         try (Connection conn = sql2o.beginTransaction()) {
             UUID journalUuid = uuidGenerator.generate();
-            conn.createQuery("insert into journals(id, type, value, alexa, date) VALUES (:id, :type, :value, :alexa, :date)")
+            conn.createQuery("insert into journals(id, type, value, alexa, source, date) VALUES (:id, :type, :value, :alexa, :source, :date)")
                     .addParameter("id", journalUuid)
                     .addParameter("type", type)
                     .addParameter("value", value)
@@ -192,33 +192,56 @@ public class Sql2oModel implements Model {
 
     //userSettings
     @Override
-    public UUID createUserSettings(String user, Boolean readFeedbackImmediately, String emailAddress, String phoneNumber,
-                                   int numberOfChildren, String cellProvider, Date lastUpdate){
-        try (Connection conn = sql2o.beginTransaction()) {
-            UUID userSettingsId = uuidGenerator.generate();
-            conn.createQuery("insert into userSettings (id, user, readFeedbackImmediately, emailAddress," +
-                    " phoneNumber, numberOfChildren, cellProvider, lastUpdate) values (:id, :user, :readFeedbackImmediately," +
-                    " :emailAddress, :phoneNumber, :numberOfChildren, :cellProvider, :lastUpdate)")
-                    .addParameter("id", userSettingsId)
-                    .addParameter("user", user)
-                    .addParameter("readFeedbackImmediately", readFeedbackImmediately)
-                    .addParameter("emailAddress", emailAddress)
-                    .addParameter("phoneNumber", phoneNumber)
-                    .addParameter("numberOfChildren", numberOfChildren)
-                    .addParameter("cellProvider", cellProvider)
-                    .addParameter("lastUpdate", new Date())
-                    .executeUpdate();
-            conn.commit();
-            return  userSettingsId;
-        }
+    public UUID createUserSettings(String user, Boolean immediateFeedback, String email, String phone,
+                                   int numberOfChildren, String provider, Date lastUpdate){
+        UUID userSettingsId;
 
+        try (Connection conn = sql2o.beginTransaction()) {
+            if (this.existsUserSettings(user)) {
+                userSettingsId = getUserSettings(user).getId();
+
+                conn.createQuery("update user_settings set immediate_feedback = :immediateFeedback, " +
+                                         "email=:email, phone=:phone, num_children=:numberOfChildren, " +
+                                         "provider=:provider, last_update=:lastUpdate where userid = :userId")
+                        .addParameter("userId", user)
+                        .addParameter("immediateFeedback", immediateFeedback)
+                        .addParameter("email", email)
+                        .addParameter("phone", phone)
+                        .addParameter("numberOfChildren", numberOfChildren)
+                        .addParameter("provider", provider)
+                        .addParameter("lastUpdate", lastUpdate)
+                        .executeUpdate();
+            }
+            else {
+                userSettingsId = uuidGenerator.generate();
+                conn.createQuery("insert into user_settings (id, userid, immediate_feedback, email," +
+                                         " phone, num_children, provider, last_update) values (:id, :userId, :immediateFeedback," +
+                                         " :email, :phone, :numberOfChildren, :provider, :lastUpdate)")
+                        .addParameter("id", userSettingsId)
+                        .addParameter("userId", user)
+                        .addParameter("immediateFeedback", immediateFeedback)
+                        .addParameter("email", email)
+                        .addParameter("phone", phone)
+                        .addParameter("numberOfChildren", numberOfChildren)
+                        .addParameter("provider", provider)
+                        .addParameter("lastUpdate", new Date())
+                        .executeUpdate();
+            }
+
+            conn.commit();
+            return userSettingsId;
+        }
     }
 
     @Override
     public UserSettings getUserSettings(String user){
         try (Connection conn = sql2o.beginTransaction()) {
-            List<UserSettings> settings = conn.createQuery("select * from userSettings where alex = :user")
+            List<UserSettings> settings = conn.createQuery("select * from user_settings where userid = :user")
                     .addParameter("user", user)
+                    .addColumnMapping("userid", "userId")
+                    .addColumnMapping("immediate_feedback", "immediateFeedback")
+                    .addColumnMapping("num_children", "numberOfChildren")
+                    .addColumnMapping("last_update", "lastUpdate")
                     .executeAndFetch(UserSettings.class);
 
             if(settings.size() > 0){
@@ -229,10 +252,14 @@ public class Sql2oModel implements Model {
     }
 
     @Override
-    public boolean existsUserSettings(UUID userSettings){
+    public boolean existsUserSettings(String userId){
         try (Connection conn = sql2o.open()) {
-            List<UserSettings> settings = conn.createQuery("select * from userSettings where id=:userSettings")
-                    .addParameter("userSettings", userSettings)
+            List<UserSettings> settings = conn.createQuery("select * from user_settings where userid=:userId")
+                    .addParameter("userId", userId)
+                    .addColumnMapping("userid", "userId")
+                    .addColumnMapping("immediate_feedback", "immediateFeedback")
+                    .addColumnMapping("num_children", "numberOfChildren")
+                    .addColumnMapping("last_update", "lastUpdate")
                     .executeAndFetch(UserSettings.class);
             return settings.size() > 0;
         }

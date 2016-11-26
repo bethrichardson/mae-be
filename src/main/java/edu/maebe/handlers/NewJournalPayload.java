@@ -7,6 +7,7 @@ class NewJournalPayload implements Validable {
     private String type;
     private String value;
     private String userId;
+    private String source;
     private boolean advice;
 
     public boolean isValid() {

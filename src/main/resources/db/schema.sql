@@ -3,7 +3,19 @@ CREATE TABLE IF NOT EXISTS journals (
     type text not null,
     alexa text not null,
     value text,
+    source text,
     date date not null
+);
+
+CREATE TABLE IF NOT EXISTS user_settings (
+    id uuid primary key,
+    userid text not null,
+    immediate_feedback BOOL not null DEFAULT TRUE,
+    email text,
+    phone text,
+    num_children int,
+    provider TEXT,
+    last_update date not null
 );
 
 CREATE TABLE IF NOT EXISTS friends (

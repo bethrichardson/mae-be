@@ -1,8 +1,6 @@
 package edu.maebe.model;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.UUID;
@@ -12,15 +10,25 @@ import java.util.Date;
 @Data
 public class UserSettings {
     UUID id;
-    String user;
+    String userId;
 
     //user settings
-    Boolean readFeedbackImmediately;
-    String emailAddress;
-    String phoneNumber;
+    Boolean immediateFeedback;
+    String email;
+    String phone;
     int numberOfChildren;
-    String cellProvider;
+    String provider;
     Date lastUpdate;
+
+    public UserSettings(String userId, Boolean immediateFeedback, String phone, String email, int numberOfChildren, String provider) {
+        this.userId = userId;
+        this.immediateFeedback = immediateFeedback;
+        this.phone = phone;
+        this.email = email;
+        this.numberOfChildren = numberOfChildren;
+        this.provider = provider;
+        this.lastUpdate = new Date();
+    }
 
     public static final String CELL_PROVIDER_VERIZON = "vtext.com";
     public static final String CELL_PROVIDER_VIRGIN = "vmobl.com ";
