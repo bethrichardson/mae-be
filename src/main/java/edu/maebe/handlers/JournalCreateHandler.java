@@ -34,30 +34,33 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
         String textForAnalysis = value.getValue();
         boolean userIdIdentified = userId.equals(System.getenv("ALEXA_USERID"));
 
-        if (value.getType().equals(Journal.JOURNAL_TYPE_TEST)) {
-            String textResponse = getTextResponseForTestJournal(value, userId, textForAnalysis);
+        switch (value.getType()) {
+            case Journal.JOURNAL_TYPE_TEST: {
+                String textResponse = getTextResponseForTestJournal(value, userId, textForAnalysis);
 
-            return new Answer(200, textResponse);
-        } else if (value.getType().equals(Journal.JOURNAL_TYPE_TEXT)) {
-            String textResponse = getTextResponseForJournal(value, userId, textForAnalysis, userIdIdentified);
-
-            return new Answer(200, textResponse);
-        } else {
-
-            MetricAnalyzer metricAnalyzer = new MetricAnalyzer(value.getType(), textForAnalysis);
-            String textResponse = metricAnalyzer.getResponseFromMetric();
-            String metricValue;
-
-            if (value.getType().equals(Journal.JOURNAL_TYPE_DIAPER)) {
-                metricValue = metricAnalyzer.getValue();
-            } else {
-                metricValue = Double.toString(metricAnalyzer.getValueInDigits());
+                return new Answer(200, textResponse);
             }
+            case Journal.JOURNAL_TYPE_TEXT: {
+                String textResponse = getTextResponseForJournal(value, userId, textForAnalysis, userIdIdentified);
 
-            model.createJournal(value.getType(), metricValue, userId, value.getSource());
-            System.out.println("Result : "+ metricValue);
+                return new Answer(200, textResponse);
+            }
+            default: {
 
-            return new Answer(200, textResponse);
+                MetricAnalyzer metricAnalyzer = new MetricAnalyzer(value.getType(), textForAnalysis);
+                String textResponse = metricAnalyzer.getResponseFromMetric();
+                String metricValue;
+
+                if (value.getType().equals(Journal.JOURNAL_TYPE_DIAPER)) {
+                    metricValue = metricAnalyzer.getValue();
+                } else {
+                    metricValue = Double.toString(metricAnalyzer.getValueInDigits());
+                }
+
+                model.createJournal(value.getType(), metricValue, userId, value.getSource());
+
+                return new Answer(200, textResponse);
+            }
         }
 
     }
