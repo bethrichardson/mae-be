@@ -189,4 +189,52 @@ public class Sql2oModel implements Model {
             return Needs.size() > 0;
         }
     }
+
+    //userSettings
+    @Override
+    public UUID createUserSettings(String user, Boolean readFeedbackImmediately, String emailAddress, String phoneNumber,
+                                   int numberOfChildren, String cellProvider, Date lastUpdate){
+        try (Connection conn = sql2o.beginTransaction()) {
+            UUID userSettingsId = uuidGenerator.generate();
+            conn.createQuery("insert into userSettings (id, user, readFeedbackImmediately, emailAddress," +
+                    " phoneNumber, numberOfChildren, cellProvider, lastUpdate) values (:id, :user, :readFeedbackImmediately," +
+                    " :emailAddress, :phoneNumber, :numberOfChildren, :cellProvider, :lastUpdate)")
+                    .addParameter("id", userSettingsId)
+                    .addParameter("user", user)
+                    .addParameter("readFeedbackImmediately", readFeedbackImmediately)
+                    .addParameter("emailAddress", emailAddress)
+                    .addParameter("phoneNumber", phoneNumber)
+                    .addParameter("numberOfChildren", numberOfChildren)
+                    .addParameter("cellProvider", cellProvider)
+                    .addParameter("lastUpdate", new Date())
+                    .executeUpdate();
+            conn.commit();
+            return  userSettingsId;
+        }
+
+    }
+
+    @Override
+    public UserSettings getUserSettings(String user){
+        try (Connection conn = sql2o.beginTransaction()) {
+            List<UserSettings> settings = conn.createQuery("select * from userSettings where alex = :user")
+                    .addParameter("user", user)
+                    .executeAndFetch(UserSettings.class);
+
+            if(settings.size() > 0){
+                return  settings.get(0);
+            }            
+            return null;
+        }
+    }
+
+    @Override
+    public boolean existsUserSettings(UUID userSettings){
+        try (Connection conn = sql2o.open()) {
+            List<UserSettings> settings = conn.createQuery("select * from userSettings where id=:userSettings")
+                    .addParameter("userSettings", userSettings)
+                    .executeAndFetch(UserSettings.class);
+            return settings.size() > 0;
+        }
+    }
 }

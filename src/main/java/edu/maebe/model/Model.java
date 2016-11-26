@@ -2,6 +2,7 @@ package edu.maebe.model;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Date;
 
 public interface Model {
     //Journal
@@ -19,4 +20,10 @@ public interface Model {
     UUID createNeed(Need need);
     List<Need> getAllNeeds(String user);
     boolean existNeed(UUID need);
+
+    //UserSetting
+    UUID createUserSettings(String user, Boolean readFeedbackImmediately, String emailAddress, String phoneNumber,
+            int numberOfChildren, String cellProvider, Date lastUpdate);
+    UserSettings getUserSettings(String user);
+    boolean existsUserSettings(UUID userSettings);
 }
