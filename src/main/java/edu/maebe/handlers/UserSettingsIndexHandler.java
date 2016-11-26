@@ -6,25 +6,19 @@ import edu.maebe.model.Model;
 import spark.QueryParamsMap;
 
 import java.util.Map;
-import java.util.Set;
 
-public class JournalIndexHandler extends AbstractRequestHandler<EmptyPayload> {
+public class UserSettingsIndexHandler extends AbstractRequestHandler<EmptyPayload> {
 
-    public JournalIndexHandler(Model model) {
+    public UserSettingsIndexHandler(Model model) {
         super(EmptyPayload.class, model);
     }
 
     @Override
     protected Answer processImpl(EmptyPayload value, Map urlParams, QueryParamsMap queryParams) {
         String userId = queryParams.value("userId");
-        String type = queryParams.value("type");
         String json;
 
-        if (type != null) {
-            json = dataToJson(model.getAllJournals(userId, type));
-        } else {
-            json = dataToJson(model.getAllJournals(userId));
-        }
+        json = dataToJson(model.getUserSettings(userId));
 
         return Answer.ok(json);
     }

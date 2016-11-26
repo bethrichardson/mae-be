@@ -6,7 +6,7 @@ import java.util.Date;
 
 public interface Model {
     //Journal
-    UUID createJournal(String type, String value, String user);
+    UUID createJournal(String type, String value, String user, String source);
     List<Journal> getAllJournals(String user);
     List<Journal> getAllJournals(String type, String user);
     boolean existJournal(UUID journal);
@@ -28,8 +28,8 @@ public interface Model {
     boolean existFriend(UUID friend);
     
     //UserSetting
-    UUID createUserSettings(String user, Boolean readFeedbackImmediately, String emailAddress, String phoneNumber,
-            int numberOfChildren, String cellProvider, Date lastUpdate);
+    UUID createUserSettings(String userId, Boolean immediateFeedback, String email, String phone,
+            int numberOfChildren, String provider, Date lastUpdate);
     UserSettings getUserSettings(String user);
-    boolean existsUserSettings(UUID userSettings);
+    boolean existsUserSettings(String userSettings);
 }

@@ -4,6 +4,8 @@ import edu.maebe.handlers.FriendIndexHandler;
 import edu.maebe.handlers.JournalCreateHandler;
 import edu.maebe.handlers.JournalIndexHandler;
 import edu.maebe.handlers.ReportIndexHandler;
+import edu.maebe.handlers.UserSettingsCreateHandler;
+import edu.maebe.handlers.UserSettingsIndexHandler;
 import edu.maebe.sql2omodel.Sql2oModel;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
@@ -26,6 +28,7 @@ import java.util.logging.Logger;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
+import static spark.Spark.put;
 import static spark.SparkBase.port;
 
 public class Main
@@ -93,5 +96,12 @@ public class Main
 
         // get all friends (using HTTP get method)
         get("/friends", new FriendIndexHandler(model));
+
+        // create or update user settings (using HTTP post method)
+        // TODO: might want to split this into different behavior for put/post
+        post("/settings", new UserSettingsCreateHandler(model));
+
+        // get user settings (using HTTP get method)
+        get("/settings", new UserSettingsIndexHandler(model));
     }
 }
