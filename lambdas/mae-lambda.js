@@ -112,6 +112,7 @@ function setJournalInSession(intent, session, callback) {
             type: requestType,
             value: journalSlot.value,
             userId: session.user.userId,
+            source: 'alexa',
             advice
         };
 
