@@ -6,13 +6,14 @@ import com.ibm.watson.developer_cloud.personality_insights.v3.model.ProfileOptio
 import edu.maebe.model.Journal;
 import edu.maebe.model.Model;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 
 public class TextAnalyzer {
     private Model model;
     private String userId;
-    public static final String JOURNAL_TYPE = "journal";
     private boolean enoughTextForAnalysis;
     private static final int MINIMUM_TEXT_CHARACTER_COUNT = 2000;
 
@@ -73,13 +74,17 @@ public class TextAnalyzer {
         List<Journal> allJournals = model.getAllJournals(userId);
         enoughTextForAnalysis = true;
         Journal currentJournal;
+        Date currentJournalDate = new Date();
+        Date thresholdDate = getDateForMinimumAmountOfAnalysis();
 
         ListIterator<Journal> journalIterator = allJournals.listIterator(allJournals.size());
         journalIterator.previous();
 
-        while (textForAnalysis.length() < MINIMUM_TEXT_CHARACTER_COUNT) {
+        // Continue to gather text until we have enough text and enough time to analyze
+        while (textForAnalysis.length() < MINIMUM_TEXT_CHARACTER_COUNT || currentJournalDate.after(thresholdDate)) {
             if (journalIterator.hasPrevious()) {
                 currentJournal = journalIterator.previous();
+                currentJournalDate = currentJournal.getDate();
                 if (currentJournal.getType().equals(Journal.JOURNAL_TYPE_TEXT)){
                     textForAnalysis += " " + currentJournal.getValue();
                 }
@@ -89,6 +94,16 @@ public class TextAnalyzer {
             }
         }
 
+        String log = String.format("Text analyzed characters=%s; earliestJournal=%s", textForAnalysis.length(), currentJournalDate);
+        System.out.println(log);
+
         return textForAnalysis;
+    }
+
+    private Date getDateForMinimumAmountOfAnalysis() {
+        int minNumberOfDays = 14;
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -minNumberOfDays);
+        return cal.getTime();
     }
 }
