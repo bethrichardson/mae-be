@@ -1,6 +1,7 @@
 import com.beust.jcommander.JCommander;
 import edu.maebe.handlers.JournalCreateHandler;
 import edu.maebe.handlers.JournalIndexHandler;
+import edu.maebe.handlers.ReportIndexHandler;
 import edu.maebe.sql2omodel.Sql2oModel;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
@@ -81,5 +82,8 @@ public class Main
 
         // get all post (using HTTP get method)
         get("/journals", new JournalIndexHandler(model));
+
+        // get all post (using HTTP get method)
+        get("/report", new ReportIndexHandler(model));
     }
 }
