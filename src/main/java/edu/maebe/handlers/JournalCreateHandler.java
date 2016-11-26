@@ -54,7 +54,7 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
                 metricValue = Double.toString(metricAnalyzer.getValueInDigits());
             }
 
-            model.createJournal(value.getType(), metricValue, userId);
+            model.createJournal(value.getType(), metricValue, userId, value.getSource());
             System.out.println("Result : "+ metricValue);
 
             return new Answer(200, textResponse);
@@ -63,7 +63,7 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
     }
 
     private String getTextResponseForJournal(NewJournalPayload value, String userId, String textForAnalysis, boolean userIdIdentified) {
-        model.createJournal(value.getType(), textForAnalysis, userId);
+        model.createJournal(value.getType(), textForAnalysis, userId, value.getSource());
         boolean requiresMedicalAdvice = false;
 
         if (userIdIdentified) {
