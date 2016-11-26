@@ -8,6 +8,8 @@ class NewUserSettingsPayload implements Validable {
     private Boolean immediateFeedback;
     private String email;
     private String phone;
+    private String first;
+    private String last;
     private int numberOfChildren;
     private String provider;
 

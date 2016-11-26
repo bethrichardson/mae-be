@@ -18,15 +18,20 @@ public class UserSettings {
     String phone;
     int numberOfChildren;
     String provider;
+    String first;
+    String last;
     Date lastUpdate;
 
-    public UserSettings(String userId, Boolean immediateFeedback, String phone, String email, int numberOfChildren, String provider) {
+    public UserSettings(String userId, Boolean immediateFeedback, String phone, String email,
+                        int numberOfChildren, String provider, String first, String last) {
         this.userId = userId;
         this.immediateFeedback = immediateFeedback;
         this.phone = phone;
         this.email = email;
         this.numberOfChildren = numberOfChildren;
         this.provider = provider;
+        this.first = first;
+        this.last = last;
         this.lastUpdate = new Date();
     }
 

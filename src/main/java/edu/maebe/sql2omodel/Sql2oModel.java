@@ -237,7 +237,7 @@ public class Sql2oModel implements Model {
     //userSettings
     @Override
     public UUID createUserSettings(String user, Boolean immediateFeedback, String email, String phone,
-                                   int numberOfChildren, String provider, Date lastUpdate){
+                                   int numberOfChildren, String provider, String first, String last, Date lastUpdate){
         UUID userSettingsId;
 
         try (Connection conn = sql2o.beginTransaction()) {
@@ -246,13 +246,16 @@ public class Sql2oModel implements Model {
 
                 conn.createQuery("update user_settings set immediate_feedback = :immediateFeedback, " +
                                          "email=:email, phone=:phone, num_children=:numberOfChildren, " +
-                                         "provider=:provider, last_update=:lastUpdate where userid = :userId")
+                                         "provider=:provider, first=:first, last=:last, " +
+                                         "last_update=:lastUpdate where userid = :userId")
                         .addParameter("userId", user)
                         .addParameter("immediateFeedback", immediateFeedback)
                         .addParameter("email", email)
                         .addParameter("phone", phone)
                         .addParameter("numberOfChildren", numberOfChildren)
                         .addParameter("provider", provider)
+                        .addParameter("first", first)
+                        .addParameter("last", last)
                         .addParameter("lastUpdate", lastUpdate)
                         .executeUpdate();
             }

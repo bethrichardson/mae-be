@@ -1,11 +1,14 @@
 import com.beust.jcommander.JCommander;
-import edu.maebe.handlers.FriendCreateHandler;
-import edu.maebe.handlers.FriendIndexHandler;
-import edu.maebe.handlers.JournalCreateHandler;
-import edu.maebe.handlers.JournalIndexHandler;
+import edu.maebe.handlers.Friend.FriendCreateHandler;
+import edu.maebe.handlers.Friend.FriendIndexHandler;
+import edu.maebe.handlers.Journal.JournalCreateHandler;
+import edu.maebe.handlers.Journal.JournalIndexHandler;
+import edu.maebe.handlers.Journal.JournalListHandler;
+import edu.maebe.handlers.Journal.JournalUpdateHandler;
+import edu.maebe.handlers.Reminders.SendReminderHandler;
 import edu.maebe.handlers.ReportIndexHandler;
-import edu.maebe.handlers.UserSettingsCreateHandler;
-import edu.maebe.handlers.UserSettingsIndexHandler;
+import edu.maebe.handlers.UserSettings.UserSettingsCreateHandler;
+import edu.maebe.handlers.UserSettings.UserSettingsIndexHandler;
 import edu.maebe.sql2omodel.Sql2oModel;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
@@ -82,26 +85,35 @@ public class Main
         freeMarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(Main.class, "/"));
         freeMarkerEngine.setConfiguration(freeMarkerConfiguration);
 
-        // insert a journal (using HTTP post method)
+        // insert a journal
         post("/journals", new JournalCreateHandler(model));
 
-        // get all journals (using HTTP get method)
-        get("/journals", new JournalIndexHandler(model));
+        // update a journal
+        put("/journals/:uuid", new JournalUpdateHandler(model));
 
-        // get all mood ratings (using HTTP get method)
+        // get all journals
+        get("/journals", new JournalListHandler(model));
+
+        // get one journal
+        get("/journals/:uuid", new JournalIndexHandler(model));
+
+        // insert a journal
+        post("/reminder/:uuid", new SendReminderHandler(model));
+
+        // get all mood ratings
         get("/report", new ReportIndexHandler(model));
 
-        // insert a friend (using HTTP post method)
+        // insert a friend
         post("/friends", new FriendCreateHandler(model));
 
-        // get all friends (using HTTP get method)
+        // get all friends
         get("/friends", new FriendIndexHandler(model));
 
-        // create or update user settings (using HTTP post method)
+        // create or update user settings
         // TODO: might want to split this into different behavior for put/post
         post("/settings", new UserSettingsCreateHandler(model));
 
-        // get user settings (using HTTP get method)
+        // get user settings
         get("/settings", new UserSettingsIndexHandler(model));
     }
 }

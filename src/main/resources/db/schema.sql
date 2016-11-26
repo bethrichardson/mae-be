@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS user_settings (
     phone text,
     num_children int,
     provider TEXT,
+    first TEXT,
+    last TEXT,
     last_update date not null
 );
 
