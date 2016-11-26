@@ -1,7 +1,8 @@
-package edu.maebe.handlers;
+package edu.maebe.handlers.Journal;
 
 import edu.maebe.AbstractRequestHandler;
 import edu.maebe.Answer;
+import edu.maebe.handlers.NewJournalPayload;
 import edu.maebe.model.Journal;
 import edu.maebe.model.Model;
 import edu.maebe.model.MoodRating;

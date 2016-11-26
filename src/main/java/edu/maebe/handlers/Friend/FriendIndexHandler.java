@@ -1,7 +1,8 @@
-package edu.maebe.handlers;
+package edu.maebe.handlers.Friend;
 
 import edu.maebe.AbstractRequestHandler;
 import edu.maebe.Answer;
+import edu.maebe.handlers.EmptyPayload;
 import edu.maebe.model.Model;
 import spark.QueryParamsMap;
 

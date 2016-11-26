@@ -1,4 +1,4 @@
-package edu.maebe.handlers;
+package edu.maebe.handlers.Friend;
 
 import edu.maebe.AbstractRequestHandler;
 import edu.maebe.Answer;
