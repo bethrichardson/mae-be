@@ -1,4 +1,3 @@
-import com.beust.jcommander.JCommander;
 import edu.maebe.handlers.Friend.FriendCreateHandler;
 import edu.maebe.handlers.Friend.FriendIndexHandler;
 import edu.maebe.handlers.Journal.JournalCreateHandler;
@@ -6,7 +5,7 @@ import edu.maebe.handlers.Journal.JournalIndexHandler;
 import edu.maebe.handlers.Journal.JournalListHandler;
 import edu.maebe.handlers.Journal.JournalUpdateHandler;
 import edu.maebe.handlers.Reminders.SendReminderHandler;
-import edu.maebe.handlers.ReportIndexHandler;
+import edu.maebe.handlers.HealthReport.ReportIndexHandler;
 import edu.maebe.handlers.UserSettings.UserSettingsCreateHandler;
 import edu.maebe.handlers.UserSettings.UserSettingsIndexHandler;
 import edu.maebe.sql2omodel.Sql2oModel;
@@ -36,22 +35,15 @@ public class Mae
     private static final Logger logger = Logger.getLogger("edu.maebe");
 
     public static void main( String[] args) {
-        CommandLineOptions options = new CommandLineOptions();
-        new JCommander(options, args);
-
-        logger.debug("Options.debug = " + options.debug);
-        logger.debug("Options.database = " + options.database);
-        logger.debug("Options.dbHost = " + options.dbHost);
-        logger.debug("Options.dbUsername = " + options.dbUsername);
-        logger.debug("Options.dbPort = " + System.getenv("PORT"));
-
         port(Integer.valueOf(System.getenv("PORT")));
-
         Sql2o sql2o = getSqlDataAccess();
         initializeDatabase(sql2o);
 
         Model model = new Sql2oModel(sql2o);
+        initializeHandlers(model);
+    }
 
+    private static void initializeHandlers(Model model) {
         // insert a journal
         post("/journals", new JournalCreateHandler(model));
 
@@ -86,7 +78,9 @@ public class Mae
 
     private static Sql2o getSqlDataAccess() {
         return new Sql2o(System.getenv("JDBC_DATABASE_URL"),
-                                    System.getenv("JDBC_DATABASE_USERNAME"), System.getenv("JDBC_DATABASE_PASSWORD"), new PostgresQuirks() {
+                         System.getenv("JDBC_DATABASE_USERNAME"),
+                         System.getenv("JDBC_DATABASE_PASSWORD"),
+                         new PostgresQuirks() {
                 {
                     converters.put(UUID.class, new UUIDConverter());
                 }

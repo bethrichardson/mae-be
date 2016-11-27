@@ -43,11 +43,6 @@
       <version>1.5.4</version>
     </dependency>
     <dependency>
-      <groupId>com.beust</groupId>
-      <artifactId>jcommander</artifactId>
-      <version>1.47</version>
-    </dependency>
-    <dependency>
       <groupId>com.ibm.watson.developer_cloud</groupId>
       <artifactId>personality-insights</artifactId>
       <version>3.5.0</version>
