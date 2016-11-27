@@ -97,7 +97,7 @@
           <appendAssemblyId>false</appendAssemblyId>
           <archive>
             <manifest>
-              <mainClass>Main</mainClass>
+              <mainClass>Mae</mainClass>
             </manifest>
           </archive>
         </configuration>
