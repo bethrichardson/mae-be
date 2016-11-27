@@ -11,6 +11,7 @@ public interface Model {
     List<Journal> getAllJournals(String user);
     List<Journal> getAllJournals(String type, String user);
     Journal getJournal(UUID journal);
+    void deleteJournal(UUID journal);
     Journal getLastJournalForUser(String userId);
     boolean existJournal(UUID journal);
 

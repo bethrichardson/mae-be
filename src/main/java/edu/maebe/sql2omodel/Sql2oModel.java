@@ -103,6 +103,17 @@ public class Sql2oModel implements Model {
     }
 
     @Override
+    public void deleteJournal(UUID journal) {
+        String query = "delete from journals where id =:journal";
+
+        try (Connection conn = sql2o.open()) {
+            conn.createQuery(query)
+                    .addParameter("journal", journal)
+                    .executeUpdate();
+        }
+    }
+
+    @Override
     public Journal getLastJournalForUser(String userid) {
         String query = "select * from journals where alexa =:userid order by date DESC";
 

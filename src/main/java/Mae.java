@@ -2,6 +2,7 @@ import edu.maebe.handlers.Advice.AdviceIndexHandler;
 import edu.maebe.handlers.Friend.FriendCreateHandler;
 import edu.maebe.handlers.Friend.FriendIndexHandler;
 import edu.maebe.handlers.Journal.JournalCreateHandler;
+import edu.maebe.handlers.Journal.JournalDeleteHandler;
 import edu.maebe.handlers.Journal.JournalIndexHandler;
 import edu.maebe.handlers.Journal.JournalListHandler;
 import edu.maebe.handlers.Journal.JournalUpdateHandler;
@@ -26,6 +27,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 import org.apache.log4j.Logger;
 
+import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.put;
@@ -56,6 +58,9 @@ public class Mae
 
         // get one journal
         get("/journals/:uuid", new JournalIndexHandler(model));
+
+        // delete one journal
+        delete("/journals/:uuid", new JournalDeleteHandler(model));
 
         // insert a journal
         post("/reminder/:uuid", new SendReminderHandler(model));
