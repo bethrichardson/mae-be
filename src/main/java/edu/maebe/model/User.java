@@ -5,8 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 @ToString(includeFieldNames=true)
 @Data
@@ -28,6 +29,7 @@ public class User {
     private String userId;
     private Model model;
     private List<MoodRating> moodRatingsForUser;
+    private static final Logger logger = Logger.getLogger("edu.maebe");
 
     public User(List<MoodRating> moodRatingsForUser, String userId){
         this.moodRatingsForUser = moodRatingsForUser;
@@ -36,25 +38,24 @@ public class User {
     }
 
     private void calculateBaselines() {
-        ArrayList<Double> angerValues = new ArrayList<>();
-        ArrayList<Double> anxietyValues = new ArrayList<>();
-        ArrayList<Double> depressionValues = new ArrayList<>();
-        ArrayList<Double> immoderationValues = new ArrayList<>();
-        ArrayList<Double> selfConsciousnessValues = new ArrayList<>();
-        ArrayList<Double> vulnerabilityValues = new ArrayList<>();
-
-
         if (moodRatingsForUser.size() >= 14 ) {
-            List<MoodRating> moodRatingsForBaseline = getMoodRatingsForBaseline(moodRatingsForUser);
+            MoodRating[] moodRatingsForBaseline = getMoodRatingsForBaseline(moodRatingsForUser);
+            int size = moodRatingsForBaseline.length;
+            double[] angerValues = new double[size];
+            double[] anxietyValues = new double[size];
+            double[] depressionValues = new double[size];
+            double[] immoderationValues = new double[size];
+            double[] selfConsciousnessValues = new double[size];
+            double[] vulnerabilityValues = new double[size];
 
             int index = 0;
             for (MoodRating moodRating : moodRatingsForBaseline) {
-                angerValues.add(index, moodRating.getFacet_anger());
-                anxietyValues.add(index, moodRating.getFacet_anxiety());
-                depressionValues.add(index, moodRating.getFacet_depression());
-                immoderationValues.add(index, moodRating.getFacet_immoderation());
-                selfConsciousnessValues.add(index, moodRating.getFacet_self_consciousness());
-                vulnerabilityValues.add(index, moodRating.getFacet_vulnerability());
+                angerValues[index] = moodRating.getFacet_anger();
+                anxietyValues[index] = moodRating.getFacet_anxiety();
+                depressionValues[index] = moodRating.getFacet_depression();
+                immoderationValues[index] = moodRating.getFacet_immoderation();
+                selfConsciousnessValues[index] = moodRating.getFacet_self_consciousness();
+                vulnerabilityValues[index] = moodRating.getFacet_vulnerability();
                 index++;
             }
 
@@ -68,20 +69,18 @@ public class User {
         }
     }
 
-    private List<MoodRating> getMoodRatingsForBaseline(List<MoodRating> moodRatingsForUser) {
-        List<MoodRating> moodRatingsForBaseline = new ArrayList<>();
-        int index = 0;
+    private MoodRating[] getMoodRatingsForBaseline(List<MoodRating> moodRatingsForUser) {
+        MoodRating[] moodRatingsForBaseline = new MoodRating[14];
 
-        while(moodRatingsForBaseline.size() < 14){
-            moodRatingsForBaseline.add(index, moodRatingsForUser.get(index));
-            index++;
+        for (int i = 0; i < 14; i++) {
+            moodRatingsForBaseline[i] = moodRatingsForUser.get(i);
         }
+
         return moodRatingsForBaseline;
     }
 
-
     @Getter
-    public class Baseline {
+    class Baseline {
         @Getter
         private String valueType;
         @Getter
@@ -97,24 +96,25 @@ public class User {
             return this.getValue() + ( 2 * this.getStandardDeviation() );
         }
 
-        public void logString(double valueToCompare, boolean nonNormal, boolean stronglyNonNormal) {
+        void logString(double valueToCompare, boolean nonNormal, boolean stronglyNonNormal) {
+            String valueAnalysisLog = String.format("Analyzing value for %s=%s; stdv=%s; " +
+                                  "boundary=%s; extreme=%s. " +
+                                  "|| current=%s; non-normal=%s; strongly-non-normal=%s", valueType, value, standardDeviation,
+                          Double.toString(standardDeviationBoundary()), Double.toString(doubleStandardDeviationBoundary()),
+                          valueToCompare,
+                          Boolean.toString(nonNormal), Boolean.toString(stronglyNonNormal)
+            );
 
-            System.out.println(String.format("%s=%s; stdv=%s; " +
-                    "boundary=%s; extreme=%s. " +
-                    "|| current=%s; non-normal=%s; strongly-non-normal=%s", valueType, value, standardDeviation,
-                    Double.toString(standardDeviationBoundary()), Double.toString(doubleStandardDeviationBoundary()),
-                    valueToCompare,
-                    Boolean.toString(nonNormal), Boolean.toString(stronglyNonNormal)
-            ));
+            logger.info(valueAnalysisLog);
         }
 
-        private Baseline (ArrayList<Double> values, String name) {
+        private Baseline (double[] values, String name) {
             this.value = mean(values);
             this.standardDeviation = getStandardDeviation(values);
             this.valueType = name;
         }
 
-        public boolean outsideNormalValue (double valueToCompare) {
+        boolean outsideNormalValue (double valueToCompare) {
             boolean outsideNormal = valueToCompare > this.standardDeviationBoundary();
             boolean stronglyOutsideNormal = stronglyOutsideNormalValue(valueToCompare);
             this.logString(valueToCompare, outsideNormal, stronglyOutsideNormal);
@@ -122,43 +122,20 @@ public class User {
             return outsideNormal;
         }
 
-        public boolean stronglyOutsideNormalValue (double valueToCompare) {
+        boolean stronglyOutsideNormalValue (double valueToCompare) {
             return valueToCompare > this.doubleStandardDeviationBoundary();
         }
 
-        private double getStandardDeviation (ArrayList<Double> values)
-        {
-            // Step 1:
+        private double getStandardDeviation (double[] values) {
             double mean = mean(values);
-            double temp = 0;
+            double temp = Arrays.stream(values).map(v -> Math.pow(v - mean, 2)).sum();
 
-            for (int i = 0; i < values.size(); i++)
-            {
-                double val = values.get(i);
-
-                // Step 2:
-                double squrDiffToMean = Math.pow(val - mean, 2);
-
-                // Step 3:
-                temp += squrDiffToMean;
-            }
-
-            // Step 4:
-            double meanOfDiffs = temp / (double) (values.size());
-
-            // Step 5:
+            double meanOfDiffs = temp / (double) (values.length);
             return Math.sqrt(meanOfDiffs);
         }
 
-        private double mean (ArrayList<Double> values){
-            double total = 0;
-
-            for ( int i= 0;i < values.size(); i++)
-            {
-                double currentNum = values.get(i);
-                total+= currentNum;
-            }
-            return total / (double) values.size();
+        private double mean (double[] values) {
+            return Arrays.stream(values).sum() / values.length;
         }
     }
 }
