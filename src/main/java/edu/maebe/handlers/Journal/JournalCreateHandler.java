@@ -14,6 +14,7 @@ import spark.QueryParamsMap;
 
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPayload> {
 
@@ -22,6 +23,7 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
     private String emotionText = "happy";
     private String endText = " lately.";
     private String advice = "Take some time to enjoy the rest of your day!";
+    private static final Logger logger = Logger.getLogger("edu.maebe");
 
     public JournalCreateHandler(Model model) {
         super(NewJournalPayload.class, model);
@@ -32,6 +34,8 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
     protected Answer processImpl(NewJournalPayload value, Map<String, String> urlParams, QueryParamsMap queryParams) {
         String userId = value.getUserId();
         String textForAnalysis = value.getValue();
+        long startTime = System.nanoTime();
+
         boolean userIdIdentified = userId.equals(System.getenv("ALEXA_USERID"));
 
         switch (value.getType()) {
@@ -42,6 +46,11 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
             }
             case Journal.JOURNAL_TYPE_TEXT: {
                 String textResponse = getTextResponseForJournal(value, userId, textForAnalysis, userIdIdentified);
+
+                long endTime = System.nanoTime();
+
+                long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+                logger.info("Call complete. Total-duration=" + duration / 1000000 + "ms");
 
                 return new Answer(200, textResponse);
             }
@@ -87,7 +96,7 @@ public class JournalCreateHandler extends AbstractRequestHandler<NewJournalPaylo
 
 
     private String getTextResponseForTestJournal(NewJournalPayload value, String userId, String typeOfTest) {
-        boolean requiresMedicalAdvice = false;
+        boolean requiresMedicalAdvice;
 
         Test test = new Test(typeOfTest);
 

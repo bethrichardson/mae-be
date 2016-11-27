@@ -7,9 +7,11 @@ import lombok.Getter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 public class Test {
     private HashMap<String, Profile> tests;
+    private static final Logger logger = Logger.getLogger("edu.maebe");
 
     @Getter
     private Profile profile;
@@ -18,7 +20,7 @@ public class Test {
         buildTestSet();
 
         this.profile = tests.get(getLastWordInTestName(testName));
-        System.out.println("Testing with " + getLastWordInTestName(testName));
+        logger.info("Using test profile for value=" + getLastWordInTestName(testName));
         if (profile == null) {
             this.profile = tests.get("normal");
         }

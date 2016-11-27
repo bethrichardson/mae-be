@@ -10,12 +10,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
+import org.apache.log4j.Logger;
 
 public class TextAnalyzer {
     private Model model;
     private String userId;
     private boolean enoughTextForAnalysis;
     private static final int MINIMUM_TEXT_CHARACTER_COUNT = 2000;
+    private static final int MINIMUM_NUMBER_DAYS = 14;
+    private static final Logger logger = Logger.getLogger("edu.maebe");
+
 
     public TextAnalyzer(Model model, String userId){
         this.model = model;
@@ -40,18 +44,19 @@ public class TextAnalyzer {
         return personalityScore;
     }
 
-    public PersonalityScore buildPersonalityScore(Profile profile) {
+    private PersonalityScore buildPersonalityScore(Profile profile) {
         PersonalityScore personalityScore = new PersonalityScore(userId, profile);
         model.createMoodRating(personalityScore.getMoodRating());
         model.createNeed(personalityScore.getNeed());
-        System.out.print("PERSONALITY SCORE: " + personalityScore.toString());
+
+        logger.info(personalityScore.toString());
 
         return personalityScore;
     }
 
     public PersonalityScore buildTestPersonalityScore(Profile profile) {
         PersonalityScore personalityScore = new PersonalityScore(userId, profile);
-        System.out.print("PERSONALITY SCORE: " + personalityScore.toString());
+        logger.info(personalityScore.toString());
 
         return personalityScore;
     }
@@ -64,8 +69,6 @@ public class TextAnalyzer {
                 .text(text);
 
         Profile profile = service.getProfile(builder.build()).execute();
-        System.out.println(profile);
-
         return profile;
     }
 
@@ -95,15 +98,14 @@ public class TextAnalyzer {
         }
 
         String log = String.format("Text analyzed characters=%s; earliestJournal=%s", textForAnalysis.length(), currentJournalDate);
-        System.out.println(log);
+        logger.info(log);
 
         return textForAnalysis;
     }
 
     private Date getDateForMinimumAmountOfAnalysis() {
-        int minNumberOfDays = 14;
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -minNumberOfDays);
+        cal.add(Calendar.DATE, -MINIMUM_NUMBER_DAYS);
         return cal.getTime();
     }
 }

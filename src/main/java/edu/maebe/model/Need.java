@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
-@ToString(includeFieldNames=true)
+@ToString(includeFieldNames=true, exclude = {"id", "date", "needMap", "userId"})
 @Data
 @Getter
 @Setter
