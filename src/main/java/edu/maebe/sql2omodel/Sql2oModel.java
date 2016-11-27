@@ -61,7 +61,7 @@ public class Sql2oModel implements Model {
         if (user == null) {
             query = "select * from journals where alexa is null";
         } else {
-            query = "select * from journals where alexa = '" + user + "'";
+            query = "select * from journals where alexa = '" + user + "' order by date desc";
         }
 
         try (Connection conn = sql2o.open()) {
