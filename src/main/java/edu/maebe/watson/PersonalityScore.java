@@ -9,20 +9,19 @@ import lombok.ToString;
 import java.util.List;
 
 @Getter
-@ToString(includeFieldNames=true)
+@ToString(includeFieldNames=true, exclude = {"userId"})
 public class PersonalityScore {
     MoodRating moodRating;
     Need need;
     String userId;
 
-    public PersonalityScore(String userId) {
+    PersonalityScore(String userId) {
         this.userId = userId;
         this.moodRating = new MoodRating(userId);
         this.need = new Need(userId);
     }
 
-
-    public PersonalityScore(String userId, Profile profile) {
+    PersonalityScore(String userId, Profile profile) {
         this.userId = userId;
         List<Trait> traitsList = profile.getPersonality();
         List<Trait> needsList = profile.getNeeds();

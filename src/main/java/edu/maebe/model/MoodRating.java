@@ -24,28 +24,28 @@ public class MoodRating {
         this.userId = userId;
     }
 
-    public double big5_agreeableness;
-    public double big5_conscientiousness;
-    public double big5_extraversion;
-    public double big5_openness;
+    private double big5_agreeableness;
+    private double big5_conscientiousness;
+    private double big5_extraversion;
+    private double big5_openness;
 
     @Getter
-    public double facet_anger;
+    private double facet_anger;
     @Getter
-    public double facet_anxiety;
+    private double facet_anxiety;
     @Getter
-    public double facet_depression;
+    private double facet_depression;
     @Getter
-    public double facet_immoderation;
+    private double facet_immoderation;
     @Getter
-    public double facet_self_consciousness;
+    private double facet_self_consciousness;
     @Getter
-    public double facet_vulnerability;
+    private double facet_vulnerability;
 
     @Data
     @Getter
     @Setter
-    public class EmotionalRangeElevated {
+    private class EmotionalRangeElevated {
         @Getter
         private boolean facet_anger;
         @Getter
@@ -60,38 +60,25 @@ public class MoodRating {
         private boolean facet_vulnerability;
     }
 
-    public String getEmotionalText(String emotionalState) {
-        String returnText;
-        switch (emotionalState) {
-            case("facet_anger"):
-                returnText = "angry";
-                break;
-            case("facet_anxiety"):
-                returnText = "anxious";
-                break;
-            case("facet_depression"):
-                returnText = "sad";
-                break;
-            case("facet_immoderation"):
-                returnText = "over indulgent";
-                break;
-            case("facet_self_consciousness"):
-                returnText = "self conscious";
-                break;
-            case("facet_vulnerability"):
-                returnText = "vulnerable";
-                break;
-            default:
-                returnText = "happy";
-                break;
-        }
+    private enum EmotionalText {
+        facet_anger ("angry"),
+        facet_anxiety ("anxious"),
+        facet_depression ("sad"),
+        facet_immoderation ("over indulgent"),
+        facet_self_consciousness ("self conscious"),
+        facet_vulnerability ("vulnerable"),
+        happy ("happy");
 
-        return returnText;
+        private final String value;
+
+        EmotionalText(String value) {
+            this.value = value;
+        }
+        private String value() { return value; }
     }
 
     private EmotionalRangeElevated getValuesOutsideBaseline(User user) {
         EmotionalRangeElevated emotionalRangeElevated = new EmotionalRangeElevated();
-        System.out.println("_________________VALUES_________________");
         emotionalRangeElevated.facet_anger = user.getFacet_anger().outsideNormalValue(this.getFacet_anger());
         emotionalRangeElevated.facet_anxiety = user.getFacet_anxiety().outsideNormalValue(this.getFacet_anxiety()) ;
         emotionalRangeElevated.facet_depression = user.getFacet_depression().outsideNormalValue(this.getFacet_depression());
@@ -105,35 +92,35 @@ public class MoodRating {
     public String getBiggestEmotionOutsideNormal(User user) {
         EmotionalRangeElevated emotionalRangeElevated = this.getValuesOutsideBaseline(user);
         double biggestEmotionValue = 0.0;
-        String biggestEmotionOutsideNorm = getEmotionalText("");
+        String biggestEmotionOutsideNorm = EmotionalText.happy.value();
 
         if (this.facet_anger >= biggestEmotionValue && emotionalRangeElevated.facet_anger){
             biggestEmotionValue = this.facet_anger;
-            biggestEmotionOutsideNorm = getEmotionalText("facet_anger");
+            biggestEmotionOutsideNorm = EmotionalText.facet_anger.value();
         }
 
         if (this.facet_anxiety >= biggestEmotionValue && emotionalRangeElevated.facet_anxiety){
             biggestEmotionValue = this.facet_anxiety;
-            biggestEmotionOutsideNorm = getEmotionalText("facet_anxiety");
+            biggestEmotionOutsideNorm = EmotionalText.facet_anxiety.value();
         }
 
         if (this.facet_depression >= biggestEmotionValue && emotionalRangeElevated.facet_depression){
             biggestEmotionValue = this.facet_depression;
-            biggestEmotionOutsideNorm = getEmotionalText("facet_depression");
+            biggestEmotionOutsideNorm = EmotionalText.facet_depression.value();
         }
 
         if (this.facet_immoderation >= biggestEmotionValue && emotionalRangeElevated.facet_immoderation){
             biggestEmotionValue = this.facet_immoderation;
-            biggestEmotionOutsideNorm = getEmotionalText("facet_immoderation");
+            biggestEmotionOutsideNorm = EmotionalText.facet_immoderation.value();
         }
 
         if (this.facet_self_consciousness >= biggestEmotionValue && emotionalRangeElevated.facet_self_consciousness){
             biggestEmotionValue = this.facet_self_consciousness;
-            biggestEmotionOutsideNorm = getEmotionalText("facet_self_consciousness");
+            biggestEmotionOutsideNorm = EmotionalText.facet_self_consciousness.value();
         }
 
         if (this.facet_vulnerability >= biggestEmotionValue && emotionalRangeElevated.facet_vulnerability){
-            biggestEmotionOutsideNorm = getEmotionalText("facet_vulnerability");
+            biggestEmotionOutsideNorm = EmotionalText.facet_vulnerability.value();
         }
 
         return biggestEmotionOutsideNorm;
@@ -155,11 +142,10 @@ public class MoodRating {
         if (fieldName.equals("big5_neuroticism")) {
             String childFieldName;
             for (Trait facet : trait.getChildren()) {
-                childFieldName = facet.getTraitId(); // TODO: Remove reflection and just list out all fields
+                childFieldName = facet.getTraitId();
                 field = MoodRating.class.getDeclaredField(childFieldName);
                 field.setAccessible(true);
                 field.set(this, facet.getRawScore());
-
             }
 
         } else {

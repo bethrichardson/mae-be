@@ -21,38 +21,29 @@ public class Need {
     @Getter
     String userId;
     @Getter
-    public double need_challenge;
+    private double need_challenge;
     @Getter
-    public double need_closeness;
+    private double need_closeness;
     @Getter
-    public double need_curiosity;
+    private double need_curiosity;
     @Getter
-    public double need_excitement;
+    private double need_excitement;
     @Getter
-    public double need_harmony;
+    private double need_harmony;
     @Getter
-    public double need_ideal;
+    private double need_ideal;
     @Getter
-    public double need_liberty;
+    private double need_liberty;
     @Getter
-    public double need_love;
+    private double need_love;
     @Getter
-    public double need_practicality;
+    private double need_practicality;
     @Getter
-    public double need_self_expression;
+    private double need_self_expression;
     @Getter
-    public double need_stability;
+    private double need_stability;
     @Getter
-    public double need_structure;
-
-    private String[] needs = { "need_challenge", "need_closeness", "need_curiosity", "need_excitement",
-          "need_harmony", "need_ideal", "need_liberty", "need_love", "need_practicality", "need_self_expression",
-            "need_stability", "need_structure"
-
-    };
-
-//    private static String need_challenge = "You seem like you could use a new challenge.";
-
+    private double need_structure;
 
     public Need(String userId) {
         this.userId = userId;
@@ -64,14 +55,14 @@ public class Need {
         field.set(this, value);
     }
 
-    public String getAdviceForNeed(String needName) {
+    private String getAdviceForNeed(String needName) {
         String[] advice = Advice.adviceMap.get(needName);
         int random = (int)(Math.random() * advice.length);
         String needDescription = needMap.get(needName);
         return needDescription + advice[random];
     }
 
-    public static Map<String, String> needMap = ImmutableMap.<String, String>builder()
+    private Map<String, String> needMap = ImmutableMap.<String, String>builder()
             .put("need_challenge", "You seem like you could use a new challenge. ")
             .put("need_closeness", "You seem like you need to feel more connected to your family and getting your home in order. ")
             .put("need_curiosity", "Do you feel like you have a desire to discover new things? ")
@@ -89,20 +80,64 @@ public class Need {
     public String getAdviceForBiggestNeed() {
         double biggestNeedValue = 0.0;
         String biggestNeed = "";
-        String[] fields = this.needs;
-        for (String field : fields) {
-            double currentFieldValue = 0;
-            try {
-                Field fieldProperty = Need.class.getField(field);
-                fieldProperty.setAccessible(true);
-                currentFieldValue = (double) fieldProperty.get(this);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            if (currentFieldValue > biggestNeedValue) {
-                biggestNeedValue = currentFieldValue;
-                biggestNeed = getAdviceForNeed(field);
-            }
+
+        if (this.getNeed_challenge() > biggestNeedValue) {
+            biggestNeedValue = this.getNeed_challenge();
+            biggestNeed = getAdviceForNeed("need_challenge");
+        }
+
+        if (this.getNeed_closeness() > biggestNeedValue) {
+            biggestNeedValue = this.getNeed_closeness();
+            biggestNeed = getAdviceForNeed("need_closeness");
+        }
+
+        if (this.getNeed_curiosity() > biggestNeedValue) {
+            biggestNeedValue = this.getNeed_curiosity();
+            biggestNeed = getAdviceForNeed("need_curiosity");
+        }
+
+        if (this.getNeed_excitement() > biggestNeedValue) {
+            biggestNeedValue = this.getNeed_excitement();
+            biggestNeed = getAdviceForNeed("need_excitement");
+        }
+
+        if (this.getNeed_harmony() > biggestNeedValue) {
+            biggestNeedValue = this.getNeed_harmony();
+            biggestNeed = getAdviceForNeed("need_harmony");
+        }
+
+        if (this.getNeed_ideal() > biggestNeedValue) {
+            biggestNeedValue = this.getNeed_ideal();
+            biggestNeed = getAdviceForNeed("need_ideal");
+        }
+
+        if (this.getNeed_liberty() > biggestNeedValue) {
+            biggestNeedValue = this.getNeed_liberty();
+            biggestNeed = getAdviceForNeed("need_liberty");
+        }
+
+        if (this.getNeed_love() > biggestNeedValue) {
+            biggestNeedValue = this.getNeed_love();
+            biggestNeed = getAdviceForNeed("need_love");
+        }
+
+        if (this.getNeed_practicality() > biggestNeedValue) {
+            biggestNeedValue = this.getNeed_practicality();
+            biggestNeed = getAdviceForNeed("need_practicality");
+        }
+
+        if (this.getNeed_self_expression() > biggestNeedValue) {
+            biggestNeedValue = this.getNeed_self_expression();
+            biggestNeed = getAdviceForNeed("need_self_expression");
+        }
+
+        if (this.getNeed_stability() > biggestNeedValue) {
+            biggestNeedValue = this.getNeed_stability();
+            biggestNeed = getAdviceForNeed("need_stability");
+        }
+
+        if (this.getNeed_structure() > biggestNeedValue) {
+            biggestNeed = getAdviceForNeed("need_structure");
         }
 
         return biggestNeed;
