@@ -182,6 +182,12 @@ function getRandomAdvice(intent, session, callback) {
 
     var endpoint = 'mae-be.herokuapp.com';
 
+    var data = {
+        source: 'alexa'
+    };
+
+    var body = JSON.stringify(data);
+
         var options = {
             host: endpoint,
             path: '/advice',
@@ -190,8 +196,6 @@ function getRandomAdvice(intent, session, callback) {
                 'Content-Type': 'application/json'
             }
         };
-
-        var body = JSON.stringify(data);
 
         var req = http.request(options, function (res) {
 
