@@ -13,11 +13,9 @@ public class Advice {
             "Have you ever tried mountain biking? Maybe you should get a bike and try it.",
             "Would you be up for trying a new sport? Maybe there is an amateur soccer league nearby."
     };
-    private static String challenge = "You seem like you could use a new challenge.";
-
 
     private static String[] need_closeness = {
-            "You could use a hug from a close friend.",
+            "Could you use a hug from a close friend?",
             "Have you reached out to a loved one for a chat lately?",
             "Find some time to get close with someone you love today.",
             "Get a good snuggle from your baby later."

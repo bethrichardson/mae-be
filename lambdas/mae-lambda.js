@@ -173,6 +173,63 @@ function setJournalInSession(intent, session, callback) {
     }
 }
 
+function getRandomAdvice(intent, session, callback) {
+    const intentName = intent.name;
+    let repromptText = '';
+    let sessionAttributes = {};
+    let speechOutput = '';
+    let advice = true;
+
+    var endpoint = 'mae-be.herokuapp.com';
+
+        var options = {
+            host: endpoint,
+            path: '/advice',
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+
+        var body = JSON.stringify(data);
+
+        var req = http.request(options, function (res) {
+
+            // Collect response data as it comes back.
+            var responseString = '';
+            res.on('data', function (data) {
+                responseString += data;
+            });
+
+            // Log the responce received from Mae.
+            // Or could use JSON.parse(responseString) here to get at individual properties.
+            res.on('end', function () {
+                console.log('Maebe Response: ' + responseString);
+                finishWithJournal(responseString, false)
+            });
+
+            // Handler for HTTP request errors.
+            req.on('error', function (e) {
+                console.error('HTTP error: ' + e.message);
+                finishWithJournal("Mae encountered an error when recording your journal.", false)
+            });
+        });
+
+        req.write(body);
+        req.end();
+
+
+    function finishWithJournal(journal) {
+        sessionAttributes = createJournalAttributes(journal);
+        speechOutput = `${journal}`;
+        repromptText = "You can ask me your current advice by saying, what's my advice?";
+
+        callback(sessionAttributes,
+            buildSpeechletResponse(intentName, speechOutput, repromptText, true));
+
+    }
+}
+
 function getJournalFromSession(intent, session, callback) {
     let journal;
     const repromptText = null;
@@ -233,7 +290,7 @@ function onIntent(intentRequest, session, callback) {
         || intentName === 'MyTestIsIntent') {
         setJournalInSession(intent, session, callback);
     } else if (intentName === 'WhatsMyAdviceIntent') {
-        getJournalFromSession(intent, session, callback);
+        getRandomAdvice(intent, session, callback);
     } else if (intentName === 'AMAZON.HelpIntent') {
         getWelcomeResponse(callback);
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {

@@ -1,3 +1,4 @@
+import edu.maebe.handlers.Advice.AdviceIndexHandler;
 import edu.maebe.handlers.Friend.FriendCreateHandler;
 import edu.maebe.handlers.Friend.FriendIndexHandler;
 import edu.maebe.handlers.Journal.JournalCreateHandler;
@@ -74,6 +75,9 @@ public class Mae
 
         // get user settings
         get("/settings", new UserSettingsIndexHandler(model));
+
+        // get random advice
+        get("/advice", new AdviceIndexHandler(model));
     }
 
     private static Sql2o getSqlDataAccess() {

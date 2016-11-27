@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @ToString(includeFieldNames=true, exclude = {"id", "date", "needMap", "userId"})
 @Data
@@ -44,6 +45,11 @@ public class Need {
     private double need_stability;
     @Getter
     private double need_structure;
+    private static String[] needs = { "need_challenge", "need_closeness", "need_curiosity", "need_excitement",
+          "need_harmony", "need_ideal", "need_liberty", "need_love", "need_practicality", "need_self_expression",
+            "need_stability", "need_structure"
+
+    };
 
     public Need(String userId) {
         this.userId = userId;
@@ -55,26 +61,26 @@ public class Need {
         field.set(this, value);
     }
 
-    private String getAdviceForNeed(String needName) {
+    private static String getAdviceForNeed(String needName) {
         String[] advice = Advice.adviceMap.get(needName);
         int random = (int)(Math.random() * advice.length);
         String needDescription = needMap.get(needName);
         return needDescription + advice[random];
     }
 
-    private Map<String, String> needMap = ImmutableMap.<String, String>builder()
-            .put("need_challenge", "You seem like you could use a new challenge. ")
-            .put("need_closeness", "You seem like you need to feel more connected to your family and getting your home in order. ")
+    private static Map<String, String> needMap = ImmutableMap.<String, String>builder()
+            .put("need_challenge", "Could you use a new challenge? ")
+            .put("need_closeness", "Would you like to feel more connected to your family? Or maybe you would like to get your home in order. ")
             .put("need_curiosity", "Do you feel like you have a desire to discover new things? ")
             .put("need_excitement", "Have you been wanting to get out there and live life and just have some fun? ")
-            .put("need_harmony", "You seem like you have a need to appreciate other people, their viewpoints, and their feelings. ")
+            .put("need_harmony", "Do you have a desire to appreciate other people, their viewpoints, and their feelings? ")
             .put("need_ideal", "Have you been feeling a desire for perfection and a sense of community? ")
-            .put("need_liberty", "You seem like you could use an escape. ")
-            .put("need_love", "You might need a little extra love right now. ")
-            .put("need_practicality", "You seem like you could benefit from getting a job done right now. ")
-            .put("need_self_expression", "You seem like you would enjoy discovering and asserting your identity right now. ")
-            .put("need_stability", "Right now it seems like you could use some stability. ")
-            .put("need_structure", "You could use some structure in your life. ")
+            .put("need_liberty", "It's always good to take some time to just get away. ")
+            .put("need_love", "Everyone could use a little extra love in their life. ")
+            .put("need_practicality", "Do you feel like just getting something done? ")
+            .put("need_self_expression", "Would you enjoy discovering and asserting your personal identity right now? ")
+            .put("need_stability", "Do you feel like you could benefit from some stability in your life? ")
+            .put("need_structure", "Would some structure in your life help you feel better? ")
             .build();
 
     public String getAdviceForBiggestNeed() {
@@ -141,5 +147,14 @@ public class Need {
         }
 
         return biggestNeed;
+    }
+
+    public static String getRandomAdvice() {
+        int min = 0;
+        int max = needs.length;
+
+        int randomNum = ThreadLocalRandom.current().nextInt(min, max);
+        String randomNeed = needs[randomNum];
+        return getAdviceForNeed(randomNeed);
     }
 }
