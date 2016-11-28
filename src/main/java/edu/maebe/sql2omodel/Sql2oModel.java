@@ -24,16 +24,17 @@ public class Sql2oModel implements Model {
     @Override
     public UUID createJournal(String type, String value, String user, String source) {
         Child child = new Child(this.getUserSettings(user).getChildBirthDate());
+        int age = child.getAge();
 
         try (Connection conn = sql2o.beginTransaction()) {
             UUID journalUuid = uuidGenerator.generate();
-            conn.createQuery("insert into journals(id, type, value, alexa, source, date) VALUES (:id, :type, :value, :alexa, :source, :date)")
+            conn.createQuery("insert into journals(id, type, value, alexa, source, age, date) VALUES (:id, :type, :value, :alexa, :source, :age, :date)")
                     .addParameter("id", journalUuid)
                     .addParameter("type", type)
                     .addParameter("value", value)
                     .addParameter("alexa", user)
                     .addParameter("date", new Date())
-                    .addParameter("age", child.getAge())
+                    .addParameter("age", age)
                     .addParameter("source", source)
                     .executeUpdate();
             conn.commit();
