@@ -23,8 +23,8 @@ public class UserSettingsCreateHandler extends AbstractRequestHandler<NewUserSet
         String userId = value.getUserId();
 
         UserSettings settings = new UserSettings(value.getUserId(), value.getImmediateFeedback(), value.getPhone(),
-                                         value.getEmail(), value.getNumberOfChildren(),
-                                                 value.getFirst(), value.getLast(), value.getProvider(),
+                                         value.getEmail(), value.getNumberOfChildren(), value.getProvider(),
+                                                 value.getFirst(), value.getLast(),
                                                  value.getChildBirthDate(), value.getGender());
         UUID settingsID = model.createUserSettings(userId, settings.getImmediateFeedback(), settings.getEmail(),
                                                    settings.getPhone(), settings.getNumberOfChildren(),
