@@ -23,6 +23,8 @@ public class Sql2oModel implements Model {
     //journals
     @Override
     public UUID createJournal(String type, String value, String user, String source) {
+        Child child = new Child(this.getUserSettings(user).getChildBirthDate());
+
         try (Connection conn = sql2o.beginTransaction()) {
             UUID journalUuid = uuidGenerator.generate();
             conn.createQuery("insert into journals(id, type, value, alexa, source, date) VALUES (:id, :type, :value, :alexa, :source, :date)")
@@ -31,6 +33,7 @@ public class Sql2oModel implements Model {
                     .addParameter("value", value)
                     .addParameter("alexa", user)
                     .addParameter("date", new Date())
+                    .addParameter("age", child.getAge())
                     .addParameter("source", source)
                     .executeUpdate();
             conn.commit();
@@ -49,6 +52,24 @@ public class Sql2oModel implements Model {
                         .addParameter("value", value)
                         .addParameter("source", source)
                         .executeUpdate();
+
+            conn.commit();
+            return journal;
+        }
+    }
+
+    @Override
+    public UUID editJournal(String type, String value, UUID journal, String source, int age) {
+        try (Connection conn = sql2o.beginTransaction()) {
+
+            conn.createQuery("update journals set type = :type, " +
+                                     "value=:value, source=:source, age=:age where id = :journalId")
+                    .addParameter("journalId", journal)
+                    .addParameter("type", type)
+                    .addParameter("value", value)
+                    .addParameter("source", source)
+                    .addParameter("age", age)
+                    .executeUpdate();
 
             conn.commit();
             return journal;
@@ -78,7 +99,7 @@ public class Sql2oModel implements Model {
         if (user == null) {
             query = "select * from journals where alexa is null and type = '" + type + "'";
         } else {
-            query = "select * from journals where alexa = '" + user + "'and type = '" + type + "'";
+            query = "select * from journals where alexa = '" + user + "'and type = '" + type + "' order by date desc";
         }
 
         try (Connection conn = sql2o.open()) {
@@ -248,7 +269,7 @@ public class Sql2oModel implements Model {
     //userSettings
     @Override
     public UUID createUserSettings(String user, Boolean immediateFeedback, String email, String phone,
-                                   int numberOfChildren, String provider, String first, String last, Date lastUpdate){
+                                   int numberOfChildren, String provider, String first, String last, Date birth, Date lastUpdate){
         UUID userSettingsId;
 
         try (Connection conn = sql2o.beginTransaction()) {
@@ -257,7 +278,7 @@ public class Sql2oModel implements Model {
 
                 conn.createQuery("update user_settings set immediate_feedback = :immediateFeedback, " +
                                          "email=:email, phone=:phone, num_children=:numberOfChildren, " +
-                                         "provider=:provider, first=:first, last=:last, " +
+                                         "provider=:provider, first=:first, last=:last, birth=:birth" +
                                          "last_update=:lastUpdate where userid = :userId")
                         .addParameter("userId", user)
                         .addParameter("immediateFeedback", immediateFeedback)
@@ -267,14 +288,15 @@ public class Sql2oModel implements Model {
                         .addParameter("provider", provider)
                         .addParameter("first", first)
                         .addParameter("last", last)
+                        .addParameter("birth", birth)
                         .addParameter("lastUpdate", lastUpdate)
                         .executeUpdate();
             }
             else {
                 userSettingsId = uuidGenerator.generate();
                 conn.createQuery("insert into user_settings (id, userid, immediate_feedback, email," +
-                                         " phone, num_children, provider, last_update) values (:id, :userId, :immediateFeedback," +
-                                         " :email, :phone, :numberOfChildren, :provider, :lastUpdate)")
+                                         " phone, num_children, provider, birth, last_update) values (:id, :userId, :immediateFeedback," +
+                                         " :email, :phone, :numberOfChildren, :provider, :birth, :lastUpdate)")
                         .addParameter("id", userSettingsId)
                         .addParameter("userId", user)
                         .addParameter("immediateFeedback", immediateFeedback)
@@ -282,6 +304,7 @@ public class Sql2oModel implements Model {
                         .addParameter("phone", phone)
                         .addParameter("numberOfChildren", numberOfChildren)
                         .addParameter("provider", provider)
+                        .addParameter("birth", birth)
                         .addParameter("lastUpdate", new Date())
                         .executeUpdate();
             }
@@ -299,6 +322,7 @@ public class Sql2oModel implements Model {
                     .addColumnMapping("userid", "userId")
                     .addColumnMapping("immediate_feedback", "immediateFeedback")
                     .addColumnMapping("num_children", "numberOfChildren")
+                    .addColumnMapping("birth", "childBirthDate")
                     .addColumnMapping("last_update", "lastUpdate")
                     .executeAndFetch(UserSettings.class);
 
@@ -317,6 +341,7 @@ public class Sql2oModel implements Model {
                     .addColumnMapping("userid", "userId")
                     .addColumnMapping("immediate_feedback", "immediateFeedback")
                     .addColumnMapping("num_children", "numberOfChildren")
+                    .addColumnMapping("birth", "childBirthDate")
                     .addColumnMapping("last_update", "lastUpdate")
                     .executeAndFetch(UserSettings.class);
             return settings.size() > 0;

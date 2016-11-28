@@ -2,6 +2,8 @@ package edu.maebe.handlers.UserSettings;
 import edu.maebe.Validable;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 class NewUserSettingsPayload implements Validable {
     private String userId;
@@ -11,6 +13,7 @@ class NewUserSettingsPayload implements Validable {
     private String first;
     private String last;
     private int numberOfChildren;
+    private Date childBirthDate;
     private String provider;
 
     public boolean isValid() {

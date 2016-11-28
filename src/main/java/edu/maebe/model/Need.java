@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-@ToString(includeFieldNames=true, exclude = {"id", "date", "needMap", "userId"})
+@ToString(includeFieldNames=true, exclude = {"id", "date", "userId"})
 @Data
 @Getter
 @Setter

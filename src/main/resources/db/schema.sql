@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS journals (
     alexa text not null,
     value text,
     source text,
+    age int,
     date date not null
 );
 

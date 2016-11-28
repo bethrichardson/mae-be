@@ -2,6 +2,7 @@ package edu.maebe.model;
 
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -16,6 +17,7 @@ public class Journal {
     String user;
     @Setter(AccessLevel.PACKAGE) String value;
     Date date;
+    Integer age; //age of child
     String source;
 
     public Journal (String type, String user, String value, String source) {
