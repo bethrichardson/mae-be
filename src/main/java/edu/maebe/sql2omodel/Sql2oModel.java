@@ -269,7 +269,8 @@ public class Sql2oModel implements Model {
     //userSettings
     @Override
     public UUID createUserSettings(String user, Boolean immediateFeedback, String email, String phone,
-                                   int numberOfChildren, String provider, String first, String last, Date birth, Date lastUpdate){
+                                   int numberOfChildren, String provider, String first, String last,
+                                   Date birth, String gender, Date lastUpdate){
         UUID userSettingsId;
 
         try (Connection conn = sql2o.beginTransaction()) {
@@ -278,8 +279,8 @@ public class Sql2oModel implements Model {
 
                 conn.createQuery("update user_settings set immediate_feedback = :immediateFeedback, " +
                                          "email=:email, phone=:phone, num_children=:numberOfChildren, " +
-                                         "provider=:provider, first=:first, last=:last, birth=:birth" +
-                                         "last_update=:lastUpdate where userid = :userId")
+                                         "provider=:provider, first=:first, last=:last, birth=:birth," +
+                                         "gender=:gender, last_update=:lastUpdate where userid = :userId")
                         .addParameter("userId", user)
                         .addParameter("immediateFeedback", immediateFeedback)
                         .addParameter("email", email)
@@ -289,14 +290,15 @@ public class Sql2oModel implements Model {
                         .addParameter("first", first)
                         .addParameter("last", last)
                         .addParameter("birth", birth)
+                        .addParameter("gender", gender)
                         .addParameter("lastUpdate", lastUpdate)
                         .executeUpdate();
             }
             else {
                 userSettingsId = uuidGenerator.generate();
                 conn.createQuery("insert into user_settings (id, userid, immediate_feedback, email," +
-                                         " phone, num_children, provider, birth, last_update) values (:id, :userId, :immediateFeedback," +
-                                         " :email, :phone, :numberOfChildren, :provider, :birth, :lastUpdate)")
+                                         " phone, num_children, provider, birth, gender, last_update) values (:id, :userId, :immediateFeedback," +
+                                         " :email, :phone, :numberOfChildren, :provider, :birth, :gender, :lastUpdate)")
                         .addParameter("id", userSettingsId)
                         .addParameter("userId", user)
                         .addParameter("immediateFeedback", immediateFeedback)
@@ -305,6 +307,7 @@ public class Sql2oModel implements Model {
                         .addParameter("numberOfChildren", numberOfChildren)
                         .addParameter("provider", provider)
                         .addParameter("birth", birth)
+                        .addParameter("gender", gender)
                         .addParameter("lastUpdate", new Date())
                         .executeUpdate();
             }

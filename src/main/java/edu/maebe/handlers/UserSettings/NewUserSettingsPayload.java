@@ -13,7 +13,8 @@ class NewUserSettingsPayload implements Validable {
     private String first;
     private String last;
     private int numberOfChildren;
-    private Date childBirthDate;
+    private Date childBirthDate; // currently support one baby for simplicity
+    private String gender; // child's gender
     private String provider;
 
     public boolean isValid() {

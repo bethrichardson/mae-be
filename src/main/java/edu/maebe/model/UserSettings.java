@@ -22,9 +22,11 @@ public class UserSettings {
     String last;
     Date lastUpdate;
     Date childBirthDate;
+    String gender;
 
     public UserSettings(String userId, Boolean immediateFeedback, String phone, String email,
-                        int numberOfChildren, String provider, String first, String last, Date childBirthDate) {
+                        int numberOfChildren, String provider, String first,
+                        String last, Date childBirthDate, String gender) {
         this.userId = userId;
         this.immediateFeedback = immediateFeedback;
         this.phone = phone;
@@ -34,6 +36,7 @@ public class UserSettings {
         this.first = first;
         this.last = last;
         this.childBirthDate = childBirthDate;
+        this.gender = gender;
         this.lastUpdate = new Date();
     }
 

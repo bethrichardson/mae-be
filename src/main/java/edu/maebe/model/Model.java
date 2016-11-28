@@ -34,7 +34,8 @@ public interface Model {
     
     //UserSetting
     UUID createUserSettings(String userId, Boolean immediateFeedback, String email, String phone,
-            int numberOfChildren, String provider, String first, String last, Date birth, Date lastUpdate);
+            int numberOfChildren, String provider, String first, String last,
+                            Date birth, String gender, Date lastUpdate);
     UserSettings getUserSettings(String user);
     boolean existsUserSettings(String userSettings);
 }
